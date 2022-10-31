@@ -55,6 +55,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
@@ -252,7 +254,7 @@ public class ProjectEditor extends JFrame {
 		rightPanel.setBackground(Info.getThemeColor(theme, 0));
 		editorQuickAccessPanel.add(rightPanel, BorderLayout.EAST);
 
-		JButton refreshButton = new JButton("Refresh");
+		JButton refreshButton = new JButton();
 		refreshButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -266,6 +268,7 @@ public class ProjectEditor extends JFrame {
 		refreshButton.setFocusable(false);
 		refreshButton.setBackground(Info.getThemeColor(theme, 0));
 		refreshButton.setForeground(Info.getThemeColor(theme, 4));
+		refreshButton.setIcon(Info.getImage(".\\assets\\refresh.png", 15, 15));
 		refreshButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		leftPanel.add(refreshButton);
 
@@ -398,7 +401,7 @@ public class ProjectEditor extends JFrame {
 					if (String.valueOf(text.charAt(wordR)).matches("\\W")) {
 						if (text.substring(wordL, wordR).matches("(\\W)*(" + Arrays.stream(keywords).collect(Collectors.joining("|")) + ")"))
 							setCharacterAttributes(wordL, wordR - wordL, attributeKeyword, false);
-						else if (isNumeric(text.substring(wordL, wordR)))
+						else if (text.substring(wordL, wordR).matches("(\\W)*(\\d)"))
 							setCharacterAttributes(wordL, wordR - wordL, attributeNumbers, false);
 						else
 							setCharacterAttributes(wordL, wordR - wordL, attributeNormal, false);
@@ -511,7 +514,7 @@ public class ProjectEditor extends JFrame {
 					if (String.valueOf(text.charAt(wordR)).matches("\\W")) {
 						if (text.substring(wordL, wordR).matches("(\\W)*(" + Arrays.stream(keywords).collect(Collectors.joining("|")) + ")"))
 							setCharacterAttributes(wordL, wordR - wordL, attributeKeyword, false);
-						else if (text.substring(wordL, wordR).matches("\\d"))
+						else if (text.substring(wordL, wordR).matches("(\\W)*(\\d)"))
 							setCharacterAttributes(wordL, wordR - wordL, attributeNumbers, false);
 						else
 							setCharacterAttributes(wordL, wordR - wordL, attributeNormal, false);
@@ -803,7 +806,7 @@ public class ProjectEditor extends JFrame {
 
 		JTextPane editorPane = new JTextPane(doc);
 		editorPane.setText(text);
-		editorPane.setBackground(Info.getThemeColor(theme, 0));
+		editorPane.setBackground(Info.getThemeColor(theme, 1));
 		editorPane.setForeground(Info.getThemeColor(theme, 4));
 		editorPane.setBorder(null);
 		editorPane.setFont(new Font("Consolas", Font.PLAIN, 14));
@@ -830,7 +833,7 @@ public class ProjectEditor extends JFrame {
 		});
 
 		TextLineNumber tln = new TextLineNumber(editorPane);
-		tln.setBackground(Info.getThemeColor(theme, 0));
+		tln.setBackground(Info.getThemeColor(theme, 1));
 		tln.setUpdateFont(true);
 		tln.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		tln.setCurrentLineForeground(Info.getThemeColor(theme, 7));
@@ -856,11 +859,44 @@ public class ProjectEditor extends JFrame {
 				}
 			}
 		});
+		closeButton.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				closeButton.setIcon(Info.getImage(".\\assets\\cross-hover.png", 10, 10));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				closeButton.setIcon(Info.getImage(".\\assets\\cross.png", 10, 10));
+			}
+			
+		});
 		closeButton.setHorizontalAlignment(SwingConstants.CENTER);
 		closeButton.setIcon(Info.getImage(".\\assets\\cross.png", 10, 10));
-		closeButton.setMaximumSize(new Dimension(15, 15));
+		closeButton.setMinimumSize(new Dimension(15, 15));
 		closeButton.setFocusable(false);
-		closeButton.setBackground(Info.getThemeColor(theme, 1));
+		closeButton.setOpaque(false);
+		closeButton.setContentAreaFilled(false);
+		closeButton.setBorderPainted(false);
 		tabComponent.add(closeButton, BorderLayout.CENTER);
 
 		tabbedPane.setTabComponentAt(openTabs.size(), tabComponent);
@@ -906,15 +942,6 @@ public class ProjectEditor extends JFrame {
 		StyleConstants.setTabSet(attributes, tabSet);
 		int length = textPane.getDocument().getLength();
 		textPane.getStyledDocument().setParagraphAttributes(0, length, attributes, false);
-	}
-	
-	private boolean isNumeric (String str) {
-		try {
-			Double.parseDouble(str);
-		} catch (Exception e) {
-			return false;
-		}
-		return true;
 	}
 
 	private void refresh() {

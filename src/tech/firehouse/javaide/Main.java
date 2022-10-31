@@ -80,6 +80,7 @@ public class Main {
 			JDialog.setDefaultLookAndFeelDecorated(true);
 
 			doBasicChecks();
+			checkLatestVersion();
 
 			ProjectSelection projSelection = new ProjectSelection(theme);
 			projSelection.check();
@@ -96,7 +97,9 @@ public class Main {
 			JOptionPane.showMessageDialog(null,"Your screen resolution is too low for this application to run. \nYour monitor needs to have a minimum resolution of 1366x768 (in pixels). \nSorry for that :(","Couldn't launch " + Info.getName() + " [" + Info.getVersion() + "]",JOptionPane.ERROR_MESSAGE);
 			System.exit(0);
 		}
-		
+	}
+	
+	private static void checkLatestVersion() {
 		try {
 			URL url = new URL("https://pastebin.com/raw/wHNdqbLr");
 			Scanner sc = new Scanner(url.openStream());
@@ -105,9 +108,7 @@ public class Main {
 			String whatsNew = (String) ((JSONObject) new JSONParser().parse(x)).get("whats-new");
 			if (!rawData.equals(Info.getVersion()))
 				JOptionPane.showMessageDialog(null, "<html><b>A new update is available for " + Info.getName() + "!</b></html>\nCurrent Version: v" + Info.getVersion() + "\nLatest Version: v" + rawData + "\n<html><b>What's New?</b></html>\n" + whatsNew.replaceAll("\\n", "\n"), "Update Now!", JOptionPane.INFORMATION_MESSAGE);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), "Cannot fetch the latest version!", JOptionPane.ERROR_MESSAGE);
-		}
+		} catch (Exception e) {}
 	}
 
 }

@@ -156,26 +156,12 @@ public class ProjectSelection extends JFrame {
 				}
 			}
 		});
-		newProjectButton.setBounds(50, 110, 100, 30);
+		newProjectButton.setBounds(50, 110, 115, 30);
 		newProjectButton.setBackground(Info.getThemeColor(theme, 0));
 		newProjectButton.setForeground(Info.getThemeColor(theme, 4));
+		newProjectButton.setIcon(Info.getImage(".\\assets\\plus.png", 15, 15));
 		newProjectButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		contentPane.add(newProjectButton);
-
-		JButton openFolderButton = new JButton("Open Folder");
-		openFolderButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "This feature is not available in the current version.", "Cannot open folders yet!", JOptionPane.WARNING_MESSAGE);
-			}
-
-		});
-		openFolderButton.setBackground(Info.getThemeColor(theme, 0));
-		openFolderButton.setForeground(Info.getThemeColor(theme, 4));
-		openFolderButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		openFolderButton.setBounds(160, 110, 100, 30);
-		contentPane.add(openFolderButton);
 
 		searchField = new JTextField();
 		searchField.addFocusListener(new FocusAdapter() {
@@ -220,7 +206,7 @@ public class ProjectSelection extends JFrame {
 		searchField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		searchField.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, Info.getImage(".\\assets\\search.png", 15, 15));
 		searchField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search in Local Projects [Hit Enter to Search]");
-		searchField.setBounds(270, 110, 405, 30);
+		searchField.setBounds(175, 110, 500, 30);
 		contentPane.add(searchField);
 		searchField.setColumns(10);
 
