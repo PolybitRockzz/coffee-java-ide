@@ -7,4 +7,6 @@ ___
 This is a Java IDE for developing and debugging java applications.
 
 ## Download Links
-From Itch https://polybitrockzz.itch.io/coffee-ide-for-java-developers
+
+From Itch https://polybitrockzz.itch.io/coffee-ide-for-java-developers <br>
+From GitHub Releases https://github.com/PolybitRockzz/coffee-java-ide/releases/tag/v0.1.x-alpha
