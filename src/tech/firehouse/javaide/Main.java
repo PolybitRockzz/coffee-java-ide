@@ -97,13 +97,17 @@ public class Main {
 			System.exit(0);
 		}
 		
-		URL url = new URL("https://pastebin.com/raw/wHNdqbLr");
-		Scanner sc = new Scanner(url.openStream());
-		String x = sc.nextLine();
-		String rawData = (String) ((JSONObject) new JSONParser().parse(x)).get("version");
-		String whatsNew = (String) ((JSONObject) new JSONParser().parse(x)).get("whats-new");
-		if (!rawData.equals(Info.getVersion()))
-			JOptionPane.showMessageDialog(null, "<html><b>A new update is available for " + Info.getName() + "!</b></html>\nCurrent Version: v" + Info.getVersion() + "\nLatest Version: v" + rawData + "\n<html><b>What's New?</b></html>\n" + whatsNew, "Update Now!", JOptionPane.INFORMATION_MESSAGE);
+		try {
+			URL url = new URL("https://pastebin.com/raw/wHNdqbLr");
+			Scanner sc = new Scanner(url.openStream());
+			String x = sc.nextLine();
+			String rawData = (String) ((JSONObject) new JSONParser().parse(x)).get("version");
+			String whatsNew = (String) ((JSONObject) new JSONParser().parse(x)).get("whats-new");
+			if (!rawData.equals(Info.getVersion()))
+				JOptionPane.showMessageDialog(null, "<html><b>A new update is available for " + Info.getName() + "!</b></html>\nCurrent Version: v" + Info.getVersion() + "\nLatest Version: v" + rawData + "\n<html><b>What's New?</b></html>\n" + whatsNew.replaceAll("\\n", "\n"), "Update Now!", JOptionPane.INFORMATION_MESSAGE);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Cannot fetch the latest version!", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 }

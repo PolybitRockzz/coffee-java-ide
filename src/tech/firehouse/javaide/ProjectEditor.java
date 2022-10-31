@@ -831,6 +831,7 @@ public class ProjectEditor extends JFrame {
 
 		TextLineNumber tln = new TextLineNumber(editorPane);
 		tln.setBackground(Info.getThemeColor(theme, 0));
+		tln.setUpdateFont(true);
 		tln.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		tln.setCurrentLineForeground(Info.getThemeColor(theme, 7));
 		tln.setBorder(new MatteBorder(0, 0, 0, 1, Info.getThemeColor(theme, 5)));
