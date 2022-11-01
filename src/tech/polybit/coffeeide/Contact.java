@@ -1,4 +1,4 @@
-package tech.firehouse.javaide;
+package tech.polybit.coffeeide;
 
 class Contact {
 	private boolean someProperty;

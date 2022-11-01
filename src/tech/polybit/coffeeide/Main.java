@@ -1,4 +1,4 @@
-package tech.firehouse.javaide;
+package tech.polybit.coffeeide;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -21,8 +21,6 @@ import com.formdev.flatlaf.FlatDarkLaf;
 
 public class Main {
 
-	private static String theme = "dark";
-
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		
@@ -38,7 +36,8 @@ public class Main {
 			if (!settings.exists()) {
 				settings.createNewFile();
 				JSONObject settingsObj = new JSONObject();
-				settingsObj.put("theme", theme);
+				settingsObj.put("theme", Info.theme);
+				settingsObj.put("tab-size", (long) Info.tabSize);
 				try (FileWriter file = new FileWriter(settings)) {
 					file.write(settingsObj.toString());
 					file.flush();
@@ -48,31 +47,32 @@ public class Main {
 			try (FileReader reader = new FileReader(settings)) {
 				Object obj = parser.parse(reader);
 				JSONObject settingsList = (JSONObject) obj;
-				theme = (String) settingsList.get("theme");
+				Info.theme = (String) settingsList.get("theme");
+				Info.tabSize = (int) ((long) settingsList.get("tab-size"));
 			}
 
 			try {
 				UIManager.setLookAndFeel(new FlatDarkLaf());
 
 				//Frame
-				UIManager.put("RootPane.background", Info.getThemeColor(theme, 1));
+				UIManager.put("RootPane.background", Info.getThemeColor(1));
 				UIManager.put("TitlePane.centerTitle", true);
 
 				//Button
-				UIManager.put("Button.background", Info.getThemeColor(theme, 0));
-				UIManager.put("Button.hoverBackground", Info.getThemeColor(theme, 1));
+				UIManager.put("Button.background", Info.getThemeColor(0));
+				UIManager.put("Button.hoverBackground", Info.getThemeColor(1));
 
 				//Text Field
-				UIManager.put("TextField.background", Info.getThemeColor(theme, 0));
-				UIManager.put("TextField.focusedBackground", Info.getThemeColor(theme, 1));
+				UIManager.put("TextField.background", Info.getThemeColor(0));
+				UIManager.put("TextField.focusedBackground", Info.getThemeColor(1));
 
 				//Scroll Bar
-				UIManager.put("ScrollBar.track", Info.getThemeColor(theme, 1));
-				UIManager.put("ScrollBar.hoverTrackColor", Info.getThemeColor(theme, 2));
-				UIManager.put("ScrollBar.pressedTrackColor", Info.getThemeColor(theme, 2));
-				UIManager.put("ScrollBar.thumb", Info.getThemeColor(theme, 1));
-				UIManager.put("ScrollBar.hoverThumbColor", Info.getThemeColor(theme, 2));
-				UIManager.put("ScrollBar.pressedThumbColor", Info.getThemeColor(theme, 2));
+				UIManager.put("ScrollBar.track", Info.getThemeColor(1));
+				UIManager.put("ScrollBar.hoverTrackColor", Info.getThemeColor(2));
+				UIManager.put("ScrollBar.pressedTrackColor", Info.getThemeColor(2));
+				UIManager.put("ScrollBar.thumb", Info.getThemeColor(1));
+				UIManager.put("ScrollBar.hoverThumbColor", Info.getThemeColor(2));
+				UIManager.put("ScrollBar.pressedThumbColor", Info.getThemeColor(2));
 			} catch (UnsupportedLookAndFeelException e) {
 				JOptionPane.showMessageDialog(null, e.getMessage(), "An Exception Occured!", JOptionPane.ERROR_MESSAGE);
 			}
@@ -82,10 +82,11 @@ public class Main {
 			doBasicChecks();
 			checkLatestVersion();
 
-			ProjectSelection projSelection = new ProjectSelection(theme);
+			ProjectSelection projSelection = new ProjectSelection();
 			projSelection.check();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(), "An Exception Occured!", JOptionPane.ERROR_MESSAGE);
+			//e.printStackTrace();
 		}
 	}
 

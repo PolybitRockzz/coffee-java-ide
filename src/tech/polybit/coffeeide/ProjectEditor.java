@@ -1,4 +1,4 @@
-package tech.firehouse.javaide;
+package tech.polybit.coffeeide;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -76,7 +76,6 @@ public class ProjectEditor extends JFrame {
 
 	private JButton saveButton;
 
-	private String theme;
 	private String[] filepath;
 	private final StyleContext styleContext;
 	private final AttributeSet attributeKeyword, attributeSpecialSymbols, attributeNumbers, attributeComments, attributeStrings, attributeNormal;
@@ -107,16 +106,16 @@ public class ProjectEditor extends JFrame {
 	private ArrayList<JTextPane> documents;
 
 	// Constructor
-	public ProjectEditor(String[] filepath, String theme) {
+	public ProjectEditor(String[] filepath) {
 		this.filepath = filepath;
-		this.theme = theme;
+		
 		styleContext = StyleContext.getDefaultStyleContext();
-		attributeKeyword = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(theme, 6));
-		attributeSpecialSymbols = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(theme, 8));
-		attributeNumbers = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(theme, 7));
-		attributeComments = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(theme, 5));
-		attributeStrings = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(theme, 9));
-		attributeNormal = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(theme, 4));
+		attributeKeyword = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(6));
+		attributeSpecialSymbols = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(8));
+		attributeNumbers = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(7));
+		attributeComments = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(5));
+		attributeStrings = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(9));
+		attributeNormal = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(4));
 		display();
 	}
 
@@ -201,31 +200,31 @@ public class ProjectEditor extends JFrame {
 
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setBackground(Info.getThemeColor(theme, 0));
+		contentPane.setBackground(Info.getThemeColor(0));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 
 		JSplitPane workspaceSplitPane = new JSplitPane();
 		workspaceSplitPane.setDividerLocation(300);
-		workspaceSplitPane.setBackground(Info.getThemeColor(theme, 0));
+		workspaceSplitPane.setBackground(Info.getThemeColor(0));
 		contentPane.add(workspaceSplitPane, BorderLayout.CENTER);
 
 		directoryTreeScrollPane = new JScrollPane();
 		directoryTreeScrollPane.setMinimumSize(new Dimension(200, 600));
-		directoryTreeScrollPane.setBackground(Info.getThemeColor(theme, 1));
+		directoryTreeScrollPane.setBackground(Info.getThemeColor(1));
 		directoryTreeScrollPane.setBorder(null);
 		workspaceSplitPane.setLeftComponent(directoryTreeScrollPane);
 
 		setupFileTree();
 
 		JPanel packageExplorerHeaderPanel = new JPanel();
-		packageExplorerHeaderPanel.setBackground(Info.getThemeColor(theme, 0));
+		packageExplorerHeaderPanel.setBackground(Info.getThemeColor(0));
 		directoryTreeScrollPane.setColumnHeaderView(packageExplorerHeaderPanel);
 
 		JLabel packageExplorerLabel = new JLabel("Package Explorer");
 		packageExplorerLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		packageExplorerLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		packageExplorerLabel.setForeground(Info.getThemeColor(theme, 4));
+		packageExplorerLabel.setForeground(Info.getThemeColor(4));
 		packageExplorerLabel.setPreferredSize(new Dimension((int) packageExplorerLabel.getPreferredSize().getWidth(), 25));
 		packageExplorerHeaderPanel.add(packageExplorerLabel);
 
@@ -233,25 +232,25 @@ public class ProjectEditor extends JFrame {
 		workspaceSplitPane.setRightComponent(editorPanel);
 		editorPanel.setLayout(new BorderLayout(0, 0));
 		editorPanel.setMinimumSize(new Dimension(800, 600));
-		editorPanel.setBackground(Info.getThemeColor(theme, 1));
+		editorPanel.setBackground(Info.getThemeColor(1));
 
 		JPanel editorQuickAccessPanel = new JPanel();
-		editorQuickAccessPanel.setBackground(Info.getThemeColor(theme, 0));
+		editorQuickAccessPanel.setBackground(Info.getThemeColor(0));
 		editorQuickAccessPanel.setLayout(new BorderLayout(0, 0));
 		editorPanel.add(editorQuickAccessPanel, BorderLayout.NORTH);
 
 		JLabel emptyQuickAccessLabel = new JLabel(" ");
 		emptyQuickAccessLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		emptyQuickAccessLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		emptyQuickAccessLabel.setForeground(Info.getThemeColor(theme, 4));
+		emptyQuickAccessLabel.setForeground(Info.getThemeColor(4));
 		editorQuickAccessPanel.add(emptyQuickAccessLabel);
 
 		JPanel leftPanel = new JPanel();
-		leftPanel.setBackground(Info.getThemeColor(theme, 0));
+		leftPanel.setBackground(Info.getThemeColor(0));
 		editorQuickAccessPanel.add(leftPanel, BorderLayout.WEST);
 
 		JPanel rightPanel = new JPanel();
-		rightPanel.setBackground(Info.getThemeColor(theme, 0));
+		rightPanel.setBackground(Info.getThemeColor(0));
 		editorQuickAccessPanel.add(rightPanel, BorderLayout.EAST);
 
 		JButton refreshButton = new JButton();
@@ -266,8 +265,8 @@ public class ProjectEditor extends JFrame {
 
 		});
 		refreshButton.setFocusable(false);
-		refreshButton.setBackground(Info.getThemeColor(theme, 0));
-		refreshButton.setForeground(Info.getThemeColor(theme, 4));
+		refreshButton.setBackground(Info.getThemeColor(0));
+		refreshButton.setForeground(Info.getThemeColor(4));
 		refreshButton.setIcon(Info.getImage(".\\assets\\refresh.png", 15, 15));
 		refreshButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		leftPanel.add(refreshButton);
@@ -282,8 +281,8 @@ public class ProjectEditor extends JFrame {
 
 		});
 		newClassButton.setFocusable(false);
-		newClassButton.setBackground(Info.getThemeColor(theme, 0));
-		newClassButton.setForeground(Info.getThemeColor(theme, 4));
+		newClassButton.setBackground(Info.getThemeColor(0));
+		newClassButton.setForeground(Info.getThemeColor(4));
 		newClassButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		leftPanel.add(newClassButton);
 
@@ -302,8 +301,8 @@ public class ProjectEditor extends JFrame {
 
 		});
 		saveButton.setFocusable(false);
-		saveButton.setBackground(Info.getThemeColor(theme, 0));
-		saveButton.setForeground(Info.getThemeColor(theme, 4));
+		saveButton.setBackground(Info.getThemeColor(0));
+		saveButton.setForeground(Info.getThemeColor(4));
 		saveButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		leftPanel.add(saveButton);
 
@@ -322,8 +321,8 @@ public class ProjectEditor extends JFrame {
 
 		});
 		deleteButton.setFocusable(false);
-		deleteButton.setBackground(Info.getThemeColor(theme, 0));
-		deleteButton.setForeground(Info.getThemeColor(theme, 4));
+		deleteButton.setBackground(Info.getThemeColor(0));
+		deleteButton.setForeground(Info.getThemeColor(4));
 		deleteButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		leftPanel.add(deleteButton);
 
@@ -342,8 +341,8 @@ public class ProjectEditor extends JFrame {
 
 		});
 		compileButton.setFocusable(false);
-		compileButton.setBackground(Info.getThemeColor(theme, 0));
-		compileButton.setForeground(Info.getThemeColor(theme, 4));
+		compileButton.setBackground(Info.getThemeColor(0));
+		compileButton.setForeground(Info.getThemeColor(4));
 		compileButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		rightPanel.add(compileButton);
 
@@ -362,17 +361,17 @@ public class ProjectEditor extends JFrame {
 
 		});
 		runButton.setFocusable(false);
-		runButton.setBackground(Info.getThemeColor(theme, 0));
-		runButton.setForeground(Info.getThemeColor(theme, 4));
+		runButton.setBackground(Info.getThemeColor(0));
+		runButton.setForeground(Info.getThemeColor(4));
 		runButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		rightPanel.add(runButton);
 
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBackground(Info.getThemeColor(theme, 1));
+		tabbedPane.setBackground(Info.getThemeColor(1));
 
 		noOpenTabsLabel = new JLabel("No tabs are open. Double click a file from the Project Explorer to get started!");
 		noOpenTabsLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		noOpenTabsLabel.setForeground(Info.getThemeColor(theme, 5));
+		noOpenTabsLabel.setForeground(Info.getThemeColor(5));
 		noOpenTabsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 		checkIfNoOpenTabs();
@@ -641,8 +640,8 @@ public class ProjectEditor extends JFrame {
 		});
 		fileTree.setCellRenderer(new MyTreeCellRenderer());
 		fileTree.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		fileTree.setForeground(Info.getThemeColor(theme, 4));
-		fileTree.setBackground(Info.getThemeColor(theme, 1));
+		fileTree.setForeground(Info.getThemeColor(4));
+		fileTree.setBackground(Info.getThemeColor(1));
 		directoryTreeScrollPane.setViewportView(fileTree);
 
 		refresh();
@@ -792,7 +791,7 @@ public class ProjectEditor extends JFrame {
 
 		JLabel tabLabel = new JLabel(file.getName());
 		tabLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tabLabel.setForeground(Info.getThemeColor(theme, 4));
+		tabLabel.setForeground(Info.getThemeColor(4));
 		tabLabel.setPreferredSize(new Dimension((int) tabLabel.getPreferredSize().getWidth() + 10, 25));
 
 		JPanel tabComponent = new JPanel(new BorderLayout());
@@ -806,8 +805,8 @@ public class ProjectEditor extends JFrame {
 
 		JTextPane editorPane = new JTextPane(doc);
 		editorPane.setText(text);
-		editorPane.setBackground(Info.getThemeColor(theme, 1));
-		editorPane.setForeground(Info.getThemeColor(theme, 4));
+		editorPane.setBackground(Info.getThemeColor(1));
+		editorPane.setForeground(Info.getThemeColor(4));
 		editorPane.setBorder(null);
 		editorPane.setFont(new Font("Consolas", Font.PLAIN, 14));
 		editorPane.addKeyListener(new KeyListener() {
@@ -833,14 +832,14 @@ public class ProjectEditor extends JFrame {
 		});
 
 		TextLineNumber tln = new TextLineNumber(editorPane);
-		tln.setBackground(Info.getThemeColor(theme, 1));
+		tln.setBackground(Info.getThemeColor(1));
 		tln.setUpdateFont(true);
 		tln.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tln.setCurrentLineForeground(Info.getThemeColor(theme, 7));
-		tln.setBorder(new MatteBorder(0, 0, 0, 1, Info.getThemeColor(theme, 5)));
+		tln.setCurrentLineForeground(Info.getThemeColor(7));
+		tln.setBorder(new MatteBorder(0, 0, 0, 1, Info.getThemeColor(5)));
 		scrollPane.setRowHeaderView(tln);
 
-		setTabs(editorPane, 4);
+		setTabs(editorPane, Info.tabSize);
 
 		JButton closeButton = new JButton();
 		closeButton.addActionListener(new ActionListener() {

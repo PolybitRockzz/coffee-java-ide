@@ -1,4 +1,4 @@
-package tech.firehouse.javaide;
+package tech.polybit.coffeeide;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -45,8 +45,6 @@ public class ProjectSelection extends JFrame {
 	 */
 	private static final long serialVersionUID = -2296115734782161248L;
 
-	private String theme;
-
 	private JPanel contentPane;
 
 	private JPanel titlePanel;
@@ -73,8 +71,7 @@ public class ProjectSelection extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public ProjectSelection(String theme) throws Exception {
-		this.theme = theme;
+	public ProjectSelection() throws Exception {
 
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -90,13 +87,13 @@ public class ProjectSelection extends JFrame {
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBorder(null);
-		contentPane.setBackground(Info.getThemeColor(theme, 0));
+		contentPane.setBackground(Info.getThemeColor(0));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
 		titlePanel = new JPanel();
 		titlePanel.setBounds(0, 0, getWidth(), 100);
-		titlePanel.setBackground(Info.getThemeColor(theme, 1));
+		titlePanel.setBackground(Info.getThemeColor(1));
 		contentPane.add(titlePanel);
 		titlePanel.setLayout(null);
 
@@ -105,7 +102,7 @@ public class ProjectSelection extends JFrame {
 		JLabel userWishLabel = new JLabel(wish);
 		userWishLabel.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 20));
 		userWishLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		userWishLabel.setForeground(Info.getThemeColor(theme, 3));
+		userWishLabel.setForeground(Info.getThemeColor(3));
 		userWishLabel.setToolTipText(Info.getTime("HH:mm"));
 		userWishLabel.setBounds(getWidth()/2 - 205, 15, 410, 50);
 		titlePanel.add(userWishLabel);
@@ -113,23 +110,15 @@ public class ProjectSelection extends JFrame {
 		JLabel subTitleLabel = new JLabel(Info.getRandomWishMessage());
 		subTitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
 		subTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		subTitleLabel.setForeground(Info.getThemeColor(theme, 4));
+		subTitleLabel.setForeground(Info.getThemeColor(4));
 		subTitleLabel.setBounds(getWidth()/2 - 350, 55, 700, 20);
 		titlePanel.add(subTitleLabel);
-
-		JLabel projectLabel = new JLabel(Info.getProject().toUpperCase());
-		projectLabel.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
-		projectLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		projectLabel.setHorizontalAlignment(SwingConstants.LEFT);
-		projectLabel.setForeground(Info.getThemeColor(theme, 5));
-		projectLabel.setBounds(5, 80, 150, 15);
-		titlePanel.add(projectLabel);
 
 		JLabel versionLabel = new JLabel(Info.getFullVersion());
 		versionLabel.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
 		versionLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		versionLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		versionLabel.setForeground(Info.getThemeColor(theme, 5));
+		versionLabel.setForeground(Info.getThemeColor(5));
 		versionLabel.setBounds(getWidth() - 95, 80, 75, 15);
 		titlePanel.add(versionLabel);
 
@@ -157,8 +146,8 @@ public class ProjectSelection extends JFrame {
 			}
 		});
 		newProjectButton.setBounds(50, 110, 115, 30);
-		newProjectButton.setBackground(Info.getThemeColor(theme, 0));
-		newProjectButton.setForeground(Info.getThemeColor(theme, 4));
+		newProjectButton.setBackground(Info.getThemeColor(0));
+		newProjectButton.setForeground(Info.getThemeColor(4));
 		newProjectButton.setIcon(Info.getImage(".\\assets\\plus.png", 15, 15));
 		newProjectButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		contentPane.add(newProjectButton);
@@ -167,11 +156,11 @@ public class ProjectSelection extends JFrame {
 		searchField.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
-				searchField.setBackground(Info.getThemeColor(theme, 1));
+				searchField.setBackground(Info.getThemeColor(1));
 			}
 			@Override
 			public void focusLost(FocusEvent e) {
-				searchField.setBackground(Info.getThemeColor(theme, 0));
+				searchField.setBackground(Info.getThemeColor(0));
 			}
 		});
 		searchField.addKeyListener(new KeyListener() {
@@ -201,14 +190,22 @@ public class ProjectSelection extends JFrame {
 			}
 
 		});
-		searchField.setBackground(Info.getThemeColor(theme, 0));
+		searchField.setBackground(Info.getThemeColor(0));
 		searchField.setBorder(new JButton().getBorder());
 		searchField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		searchField.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, Info.getImage(".\\assets\\search.png", 15, 15));
 		searchField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search in Local Projects [Hit Enter to Search]");
-		searchField.setBounds(175, 110, 500, 30);
+		searchField.setBounds(175, 110, 460, 30);
 		contentPane.add(searchField);
 		searchField.setColumns(10);
+		
+		JButton infoButton = new JButton();
+		infoButton.setBounds(645, 110, 30, 30);
+		infoButton.setBackground(Info.getThemeColor(0));
+		infoButton.setForeground(Info.getThemeColor(4));
+		infoButton.setIcon(Info.getImage(".\\assets\\info.png", 15, 15));
+		infoButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		contentPane.add(infoButton);
 
 		setupProjects(getProjectsJSONData(""));
 		contentPane.add(projectScrollPane);
@@ -223,53 +220,53 @@ public class ProjectSelection extends JFrame {
 		panel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				panel.setBackground(Info.getThemeColor(theme, 2));
-				titleLabel.setForeground(Info.getThemeColor(theme, 3));
+				panel.setBackground(Info.getThemeColor(2));
+				titleLabel.setForeground(Info.getThemeColor(3));
 				panel.repaint();
 			}
 			@Override
 			public void mouseExited(MouseEvent e) {
-				panel.setBackground(Info.getThemeColor(theme, 1));
-				titleLabel.setForeground(Info.getThemeColor(theme, 4));
+				panel.setBackground(Info.getThemeColor(1));
+				titleLabel.setForeground(Info.getThemeColor(4));
 				panel.repaint();
 			}
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				setVisible(false);
-				ProjectEditor editor = new ProjectEditor(filepath, theme);
+				ProjectEditor editor = new ProjectEditor(filepath);
 				editor.check();
 			}
 		});
 		panel.setBounds(10, 10 + (index*100), projectsPanel.getWidth() - 30, 90);
 		panel.setLayout(null);
 		panel.setBorder(null);
-		panel.setBackground(Info.getThemeColor(theme, 1));
+		panel.setBackground(Info.getThemeColor(1));
 		panel.setToolTipText(Arrays.stream(filepath).collect(Collectors.joining("\\")));
 		panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		projectsPanel.add(panel);
 
 		titleLabel.setBounds(15, 10, panel.getWidth() - 20, 30);
 		titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 25));
-		titleLabel.setForeground(Info.getThemeColor(theme, 4));
+		titleLabel.setForeground(Info.getThemeColor(4));
 		panel.add(titleLabel);
 
 		JLabel javaLabel = new JLabel("Java Runtime: " + java[java.length - 1]);
 		javaLabel.setBounds(15, 45, panel.getWidth() - 20, 15);
 		javaLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		javaLabel.setForeground(Info.getThemeColor(theme, 4));
+		javaLabel.setForeground(Info.getThemeColor(4));
 		panel.add(javaLabel);
 
 		JLabel lastModifiedLabel = new JLabel("Last Modified: " + lastModified);
 		lastModifiedLabel.setBounds(15, 65, panel.getWidth() - 20, 15);
 		lastModifiedLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		lastModifiedLabel.setForeground(Info.getThemeColor(theme, 4));
+		lastModifiedLabel.setForeground(Info.getThemeColor(4));
 		panel.add(lastModifiedLabel);
 	}
 
 	private void setupProjects(ArrayList<String[]> data) {
 		projectsPanel = new JPanel();
 		projectsPanel.setBounds(50, 150, getWidth() - 125, getHeight() - 150);
-		projectsPanel.setBackground(Info.getThemeColor(theme, 0));
+		projectsPanel.setBackground(Info.getThemeColor(0));
 		projectsPanel.setPreferredSize(new Dimension(getWidth() - 125, 10 + (5*100)));
 		projectsPanel.setLayout(null);
 

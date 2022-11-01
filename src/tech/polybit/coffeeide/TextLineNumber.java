@@ -1,4 +1,4 @@
-package tech.firehouse.javaide;
+package tech.polybit.coffeeide;
 
 import java.awt.*;
 import java.beans.*;

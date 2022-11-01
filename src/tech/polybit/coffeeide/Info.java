@@ -1,4 +1,4 @@
-package tech.firehouse.javaide;
+package tech.polybit.coffeeide;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -9,12 +9,11 @@ import javax.swing.ImageIcon;
 
 public class Info {
 	
+	public static String theme = "dark";
+	public static int tabSize = 4;
+	
 	public static String getName() {
 		return "Coffee IDE";
-	}
-	
-	public static String getProject() {
-		return "The Firehouse Project";
 	}
 	
 	public static String getUser() {
@@ -66,7 +65,7 @@ public class Info {
 		return imageIcon;
 	}
 	
-	public static Color getThemeColor(String theme, int shade) {
+	public static Color getThemeColor(int shade) {
 		Color[] darkTheme = {
 				new Color(25, 25, 25), // Dark +
 				new Color(35, 35, 35), // Dark

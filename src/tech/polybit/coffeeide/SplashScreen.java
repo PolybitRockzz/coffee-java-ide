@@ -1,4 +1,4 @@
-package tech.firehouse.javaide;
+package tech.polybit.coffeeide;
 
 import java.awt.Font;
 
@@ -15,12 +15,12 @@ public class SplashScreen {
 		window.setLayout(null);
 		window.setAlwaysOnTop(true);
 		
-		window.getContentPane().setBackground(Info.getThemeColor("dark", 0));
+		window.getContentPane().setBackground(Info.getThemeColor(0));
 		
 		JLabel mainLabel = new JLabel(Info.getName());
 		mainLabel.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 40));
 		mainLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		mainLabel.setForeground(Info.getThemeColor("dark", 3));
+		mainLabel.setForeground(Info.getThemeColor(3));
 		mainLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		mainLabel.setBounds((window.getWidth()/2) - 200, 115, 400, 50);
 		window.getContentPane().add(mainLabel, SwingConstants.CENTER);
@@ -28,7 +28,7 @@ public class SplashScreen {
 		JLabel versionLabel = new JLabel(Info.getFullVersion());
 		versionLabel.setFont(new Font("Segoe UI Semibold", Font.PLAIN, 15));
 		versionLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		versionLabel.setForeground(Info.getThemeColor("dark", 4));
+		versionLabel.setForeground(Info.getThemeColor(4));
 		versionLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		versionLabel.setBounds((window.getWidth()/2) - 200, 165, 400, 20);
 		
