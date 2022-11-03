@@ -18,6 +18,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 
 public class Main {
 
@@ -52,7 +53,10 @@ public class Main {
 			}
 
 			try {
-				UIManager.setLookAndFeel(new FlatDarkLaf());
+				if (Info.theme.equals("dark"))
+					UIManager.setLookAndFeel(new FlatDarkLaf());
+				else if (Info.theme.equals("light"))
+					UIManager.setLookAndFeel(new FlatLightLaf());
 
 				//Frame
 				UIManager.put("RootPane.background", Info.getThemeColor(1));

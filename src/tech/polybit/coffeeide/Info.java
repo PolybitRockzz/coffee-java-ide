@@ -78,8 +78,22 @@ public class Info {
 				new Color(207, 127, 8), // Font Special Symbols
 				new Color(27, 198, 128), // Font Strings
 		};
+		Color[] lightTheme = {
+				new Color(215, 215, 215), // Light +
+				new Color(225, 225, 225), // Light
+				new Color(245, 245, 245), // Light :: Hover
+				new Color(35, 35, 35), // Font Priority
+				new Color(55, 55, 55), // Font
+				new Color(195, 195, 195), // Font Minor
+				new Color(232, 86, 86), // Font Keyword
+				new Color(5, 117, 173), // Font Number
+				new Color(153, 92, 2), // Font Special Symbols
+				new Color(19, 156, 100), // Font Strings
+		};
 		if (theme.equals("dark"))
 			return darkTheme[shade];
+		else if (theme.equals("light"))
+			return lightTheme[shade];
 		return null;
 	}
 

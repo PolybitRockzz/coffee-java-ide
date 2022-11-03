@@ -148,7 +148,7 @@ public class ProjectSelection extends JFrame {
 		newProjectButton.setBounds(50, 110, 115, 30);
 		newProjectButton.setBackground(Info.getThemeColor(0));
 		newProjectButton.setForeground(Info.getThemeColor(4));
-		newProjectButton.setIcon(Info.getImage(".\\assets\\plus.png", 15, 15));
+		newProjectButton.setIcon(Info.getImage(".\\assets\\images\\plus.png", 15, 15));
 		newProjectButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		contentPane.add(newProjectButton);
 
@@ -193,7 +193,7 @@ public class ProjectSelection extends JFrame {
 		searchField.setBackground(Info.getThemeColor(0));
 		searchField.setBorder(new JButton().getBorder());
 		searchField.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-		searchField.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, Info.getImage(".\\assets\\search.png", 15, 15));
+		searchField.putClientProperty(FlatClientProperties.TEXT_FIELD_LEADING_ICON, Info.getImage(".\\assets\\images\\search.png", 15, 15));
 		searchField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search in Local Projects [Hit Enter to Search]");
 		searchField.setBounds(175, 110, 460, 30);
 		contentPane.add(searchField);
@@ -203,7 +203,7 @@ public class ProjectSelection extends JFrame {
 		infoButton.setBounds(645, 110, 30, 30);
 		infoButton.setBackground(Info.getThemeColor(0));
 		infoButton.setForeground(Info.getThemeColor(4));
-		infoButton.setIcon(Info.getImage(".\\assets\\info.png", 15, 15));
+		infoButton.setIcon(Info.getImage(".\\assets\\images\\info.png", 15, 15));
 		infoButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		contentPane.add(infoButton);
 

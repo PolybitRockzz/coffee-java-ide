@@ -267,7 +267,7 @@ public class ProjectEditor extends JFrame {
 		refreshButton.setFocusable(false);
 		refreshButton.setBackground(Info.getThemeColor(0));
 		refreshButton.setForeground(Info.getThemeColor(4));
-		refreshButton.setIcon(Info.getImage(".\\assets\\refresh.png", 15, 15));
+		refreshButton.setIcon(Info.getImage(".\\assets\\images\\refresh.png", 15, 15));
 		refreshButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		leftPanel.add(refreshButton);
 
@@ -880,17 +880,17 @@ public class ProjectEditor extends JFrame {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				closeButton.setIcon(Info.getImage(".\\assets\\cross-hover.png", 10, 10));
+				closeButton.setIcon(Info.getImage(".\\assets\\images\\cross-hover.png", 10, 10));
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				closeButton.setIcon(Info.getImage(".\\assets\\cross.png", 10, 10));
+				closeButton.setIcon(Info.getImage(".\\assets\\images\\cross.png", 10, 10));
 			}
 			
 		});
 		closeButton.setHorizontalAlignment(SwingConstants.CENTER);
-		closeButton.setIcon(Info.getImage(".\\assets\\cross.png", 10, 10));
+		closeButton.setIcon(Info.getImage(".\\assets\\images\\cross.png", 10, 10));
 		closeButton.setMinimumSize(new Dimension(15, 15));
 		closeButton.setFocusable(false);
 		closeButton.setOpaque(false);
