@@ -10,7 +10,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -35,14 +34,12 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class ProjectSelection extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -2296115734782161248L;
 
 	private JPanel contentPane;
@@ -51,31 +48,32 @@ public class ProjectSelection extends JFrame {
 	private JPanel projectsPanel;
 	private JTextField searchField;
 	private JScrollPane projectScrollPane;
+	
+	private boolean aboutIsVisible = false;
 
-	/**
-	 * Launch the application.
-	 */
-	//	public static void main(String[] args) {
-	//		EventQueue.invokeLater(new Runnable() {
-	//			public void run() {
-	//				try {
-	//					ProjectSelection frame = new ProjectSelection();
-	//					frame.setVisible(true);
-	//				} catch (Exception e) {
-	//					e.printStackTrace();
-	//				}
-	//			}
-	//		});
-	//	}
-
-	/**
-	 * Create the frame.
-	 */
 	public ProjectSelection() throws Exception {
 
 		addWindowListener(new WindowAdapter() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void windowClosed(WindowEvent e) {
+				setVisible(false);
+				
+				File dir = new File(System.getenv("APPDATA") + "\\" + Info.getName());
+				if (!dir.exists()) dir.mkdirs();
+				
+				//Saves settings
+				File settings = new File(dir.getAbsolutePath() + "\\settings.json");
+				JSONObject settingsObj = new JSONObject();
+				settingsObj.put("theme", Info.theme);
+				settingsObj.put("tab-size", (long) Info.tabSize);
+				try (FileWriter file = new FileWriter(settings)) {
+					file.write(settingsObj.toString());
+					file.flush();
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, e1.getMessage(), "An Exception Occured!", JOptionPane.ERROR_MESSAGE);
+				}
+				
 				System.exit(0);
 			}
 		});
@@ -199,13 +197,23 @@ public class ProjectSelection extends JFrame {
 		contentPane.add(searchField);
 		searchField.setColumns(10);
 		
-		JButton infoButton = new JButton();
-		infoButton.setBounds(645, 110, 30, 30);
-		infoButton.setBackground(Info.getThemeColor(0));
-		infoButton.setForeground(Info.getThemeColor(4));
-		infoButton.setIcon(Info.getImage(".\\assets\\images\\info.png", 15, 15));
-		infoButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		contentPane.add(infoButton);
+		JButton settingsButton = new JButton();
+		settingsButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (aboutIsVisible) return;
+				Settings settings = new Settings(ProjectSelection.this);
+				settings.check();
+			}
+			
+		});
+		settingsButton.setBounds(645, 110, 30, 30);
+		settingsButton.setBackground(Info.getThemeColor(0));
+		settingsButton.setForeground(Info.getThemeColor(4));
+		settingsButton.setIcon(Info.getImage(".\\assets\\images\\settings.png", 15, 15));
+		settingsButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		contentPane.add(settingsButton);
 
 		setupProjects(getProjectsJSONData(""));
 		contentPane.add(projectScrollPane);
@@ -351,7 +359,7 @@ public class ProjectSelection extends JFrame {
 			JSONArray projectList = (JSONArray) obj;
 			projectList.forEach( emp -> {
 				String[] tempData = parseProject((JSONObject) emp, filter);
-				if (tempData != null) { projectsList.add(tempData); System.out.println(tempData[0]); }
+				if (tempData != null) { projectsList.add(tempData); }
 			} );
 		}
 
@@ -361,6 +369,7 @@ public class ProjectSelection extends JFrame {
 	private static String[] parseProject(JSONObject project, String filter) {
 		String[] data = new String[3];
 		data[0] = (String) project.get("project-dir");
+		if (data[0] == null) return null;
 		if (!data[0].toLowerCase().split("\\\\")[data[0].split("\\\\").length - 1].startsWith(filter.toLowerCase())) return null;
 		data[1] = (String) project.get("java-dir");
 		data[2] = (String) project.get("last-modified");

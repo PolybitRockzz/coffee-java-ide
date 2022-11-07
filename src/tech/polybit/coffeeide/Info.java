@@ -6,34 +6,42 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 
 public class Info {
-	
+
 	public static String theme = "dark";
 	public static int tabSize = 4;
-	
+
 	public static String getName() {
 		return "Coffee IDE";
 	}
-	
+
 	public static String getUser() {
 		return System.getProperty("user.name");
 	}
-	
+
 	public static String getVersion() {
 		return "0.1.0";
 	}
-	
+
 	public static String getFullVersion() {
 		return "v0.1.0 ALPHA";
 	}
-	
+
 	public static String getTime(String str) {
 		SimpleDateFormat format = new SimpleDateFormat(str);
 		Date date = new Date();
 		return format.format(date);
 	}
-	
+
 	public static String getRandomWishMessage() {
 		String[] messages = {
 				"Pick up from where you left off!",
@@ -56,7 +64,7 @@ public class Info {
 		};
 		return messages[(int) (Math.random() * messages.length)];
 	}
-	
+
 	public static ImageIcon getImage(String path, int w, int h) {
 		ImageIcon imageIcon = new ImageIcon(path);
 		Image image = imageIcon.getImage();
@@ -64,7 +72,41 @@ public class Info {
 		imageIcon = new ImageIcon(newimg);
 		return imageIcon;
 	}
-	
+
+	public static void setUILookAndFeel() {
+		// Set UI Look and Feel
+		try {
+			if (Info.theme.equals("dark"))
+				UIManager.setLookAndFeel(new FlatDarkLaf());
+			else if (Info.theme.equals("light"))
+				UIManager.setLookAndFeel(new FlatLightLaf());
+
+			//Frame
+			UIManager.put("RootPane.background", Info.getThemeColor(1));
+			UIManager.put("TitlePane.centerTitle", true);
+
+			//Button
+			UIManager.put("Button.background", Info.getThemeColor(0));
+			UIManager.put("Button.hoverBackground", Info.getThemeColor(1));
+
+			//Text Field
+			UIManager.put("TextField.background", Info.getThemeColor(0));
+			UIManager.put("TextField.focusedBackground", Info.getThemeColor(1));
+
+			//Scroll Bar
+			UIManager.put("ScrollBar.track", Info.getThemeColor(1));
+			UIManager.put("ScrollBar.hoverTrackColor", Info.getThemeColor(2));
+			UIManager.put("ScrollBar.pressedTrackColor", Info.getThemeColor(2));
+			UIManager.put("ScrollBar.thumb", Info.getThemeColor(1));
+			UIManager.put("ScrollBar.hoverThumbColor", Info.getThemeColor(2));
+			UIManager.put("ScrollBar.pressedThumbColor", Info.getThemeColor(2));
+		} catch (UnsupportedLookAndFeelException e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "An Exception Occured!", JOptionPane.ERROR_MESSAGE);
+		}
+		JFrame.setDefaultLookAndFeelDecorated(true);
+		JDialog.setDefaultLookAndFeelDecorated(true);
+	}
+
 	public static Color getThemeColor(int shade) {
 		Color[] darkTheme = {
 				new Color(25, 25, 25), // Dark +

@@ -63,9 +63,6 @@ import javax.swing.JButton;
 
 public class ProjectEditor extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3364502009512038342L;
 	private JPanel contentPane;
 	private JPanel editorPanel;

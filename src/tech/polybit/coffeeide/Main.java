@@ -8,17 +8,9 @@ import java.io.FileWriter;
 import java.net.URL;
 import java.util.Scanner;
 
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 
 public class Main {
 
@@ -30,6 +22,7 @@ public class Main {
 			SplashScreen.display();
 			
 			File dir = new File(System.getenv("APPDATA") + "\\" + Info.getName());
+			if (!dir.exists()) dir.mkdirs();
 			
 			JSONParser parser = new JSONParser();
 			
@@ -48,46 +41,28 @@ public class Main {
 			try (FileReader reader = new FileReader(settings)) {
 				Object obj = parser.parse(reader);
 				JSONObject settingsList = (JSONObject) obj;
-				Info.theme = (String) settingsList.get("theme");
-				Info.tabSize = (int) ((long) settingsList.get("tab-size"));
+				try {
+					Info.theme = (String) settingsList.get("theme");
+					Info.tabSize = (int) ((long) settingsList.get("tab-size"));
+				} catch (Exception e) {
+					JSONObject settingsObj = new JSONObject();
+					settingsObj.put("theme", Info.theme);
+					settingsObj.put("tab-size", (long) Info.tabSize);
+					try (FileWriter file = new FileWriter(settings)) {
+						file.write(settingsObj.toString());
+						file.flush();
+					}
+				}
 			}
 
-			try {
-				if (Info.theme.equals("dark"))
-					UIManager.setLookAndFeel(new FlatDarkLaf());
-				else if (Info.theme.equals("light"))
-					UIManager.setLookAndFeel(new FlatLightLaf());
-
-				//Frame
-				UIManager.put("RootPane.background", Info.getThemeColor(1));
-				UIManager.put("TitlePane.centerTitle", true);
-
-				//Button
-				UIManager.put("Button.background", Info.getThemeColor(0));
-				UIManager.put("Button.hoverBackground", Info.getThemeColor(1));
-
-				//Text Field
-				UIManager.put("TextField.background", Info.getThemeColor(0));
-				UIManager.put("TextField.focusedBackground", Info.getThemeColor(1));
-
-				//Scroll Bar
-				UIManager.put("ScrollBar.track", Info.getThemeColor(1));
-				UIManager.put("ScrollBar.hoverTrackColor", Info.getThemeColor(2));
-				UIManager.put("ScrollBar.pressedTrackColor", Info.getThemeColor(2));
-				UIManager.put("ScrollBar.thumb", Info.getThemeColor(1));
-				UIManager.put("ScrollBar.hoverThumbColor", Info.getThemeColor(2));
-				UIManager.put("ScrollBar.pressedThumbColor", Info.getThemeColor(2));
-			} catch (UnsupportedLookAndFeelException e) {
-				JOptionPane.showMessageDialog(null, e.getMessage(), "An Exception Occured!", JOptionPane.ERROR_MESSAGE);
-			}
-			JFrame.setDefaultLookAndFeelDecorated(true);
-			JDialog.setDefaultLookAndFeelDecorated(true);
+			Info.setUILookAndFeel();
 
 			doBasicChecks();
 			checkLatestVersion();
 
 			ProjectSelection projSelection = new ProjectSelection();
 			projSelection.check();
+			
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(), "An Exception Occured!", JOptionPane.ERROR_MESSAGE);
 			//e.printStackTrace();
@@ -98,8 +73,8 @@ public class Main {
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		int width = gd.getDisplayMode().getWidth();
 		int height = gd.getDisplayMode().getHeight();
-		if (width < 1366 || height < 768) {
-			JOptionPane.showMessageDialog(null,"Your screen resolution is too low for this application to run. \nYour monitor needs to have a minimum resolution of 1366x768 (in pixels). \nSorry for that :(","Couldn't launch " + Info.getName() + " [" + Info.getVersion() + "]",JOptionPane.ERROR_MESSAGE);
+		if (width < 1280 || height < 768) {
+			JOptionPane.showMessageDialog(null,"Your screen resolution is too low for this application to run. \nYour monitor needs to have a minimum resolution of 1280x1024 or 1366x768 (in pixels). \nSorry for that :(","Couldn't launch " + Info.getName() + " [" + Info.getVersion() + "]",JOptionPane.ERROR_MESSAGE);
 			System.exit(0);
 		}
 	}
