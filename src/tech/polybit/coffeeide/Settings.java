@@ -4,14 +4,21 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+
+import org.json.simple.JSONObject;
 
 public class Settings extends JDialog {
 
@@ -67,10 +74,31 @@ public class Settings extends JDialog {
 		JButton saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Info.theme = themes[themeComboBox.getSelectedIndex()];
 				Info.tabSize = tabSizes[tabSizeComboBox.getSelectedIndex()];
+				
+				File dir = new File(System.getenv("APPDATA") + "\\" + Info.getName());
+				if (!dir.exists()) dir.mkdirs();
+				
+				//Saves settings
+				File settings = new File(dir.getAbsolutePath() + "\\settings.json");
+				JSONObject settingsObj = new JSONObject();
+				settingsObj.put("theme", Info.theme);
+				settingsObj.put("tab-size", (long) Info.tabSize);
+				try (FileWriter file = new FileWriter(settings)) {
+					file.write(settingsObj.toString());
+					file.flush();
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(null, e1.getMessage(), "An Exception Occured!", JOptionPane.ERROR_MESSAGE);
+				}
+				
+				Info.setUILookAndFeel();
+				SwingUtilities.updateComponentTreeUI(frame);
+				SwingUtilities.updateComponentTreeUI(Settings.this);
+				
 				JOptionPane.showMessageDialog(null, "Your settings have been saved successfully!\nRefresh the IDE for all changes to be visible...", "Settings Configuration Success",JOptionPane.INFORMATION_MESSAGE);
 			}
 			
