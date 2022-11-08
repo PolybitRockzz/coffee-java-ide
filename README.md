@@ -17,5 +17,5 @@ Make sure you have Git installed in your PC.
 git clone https://github.com/polybit-tech/coffee-java-ide coffee-java-ide
 cd coffee-java-ide
 javac -cp ".\lib\*;" -d ".\bin" ".\src\tech\polybit\coffeeide\*"
-java -cp ".\lib\*;.\home;" Main
+java -cp ".\lib\*;.\home;" tech.polybit.coffeeide.Main
 ```
