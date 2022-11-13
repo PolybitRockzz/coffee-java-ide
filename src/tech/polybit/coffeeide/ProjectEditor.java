@@ -74,6 +74,7 @@ public class ProjectEditor extends JFrame {
 	private JButton saveButton;
 
 	private String[] filepath;
+	private String filepathStr;
 	private final StyleContext styleContext;
 	private final AttributeSet attributeKeyword, attributeSpecialSymbols, attributeNumbers, attributeComments, attributeStrings, attributeNormal;
 
@@ -98,13 +99,12 @@ public class ProjectEditor extends JFrame {
 			"()", "\"\"", "\'\'", "{}", "[]"
 	};
 
-	private ArrayList<String> openTabs;
-	private ArrayList<JLabel> nameLists;
-	private ArrayList<JTextPane> documents;
+	private ArrayList<TabComponent> tabs;
 
 	// Constructor
 	public ProjectEditor(String[] filepath) {
 		this.filepath = filepath;
+		this.filepathStr = Arrays.stream(filepath).collect(Collectors.joining("\\"));
 		
 		styleContext = StyleContext.getDefaultStyleContext();
 		attributeKeyword = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(6));
@@ -120,9 +120,7 @@ public class ProjectEditor extends JFrame {
 	public void display() {
 
 		// Initializing ArrayLists
-		openTabs = new ArrayList<String>();
-		nameLists = new ArrayList<JLabel>();
-		documents = new ArrayList<JTextPane>();
+		tabs = new ArrayList<TabComponent>();
 
 		addWindowListener(new WindowAdapter() {
 
@@ -131,16 +129,16 @@ public class ProjectEditor extends JFrame {
 			public void windowClosing(WindowEvent e) {
 
 				// Check for unsaved changes
-				for (Object obj1 : nameLists.toArray()) {
-					JLabel label = (JLabel) obj1;
-					if (label.getText().startsWith("*")) {
-						int c1 = JOptionPane.showConfirmDialog(null, "Looks like you have unsaved changes. Do you want to save them before quitting?", "You didn't save all files!", JOptionPane.WARNING_MESSAGE);
+				for (TabComponent obj1 : tabs) {
+					if (obj1.getLabel().getText().startsWith("*")) {
+						int c1 = JOptionPane.showConfirmDialog(null,
+								"Looks like you have unsaved changes. Do you want to save them before quitting?",
+								"You didn't save all files!", JOptionPane.WARNING_MESSAGE);
 						if (c1 == JOptionPane.YES_OPTION) {
-							for (Object obj2 : nameLists.toArray()) {
-								JLabel label1 = (JLabel) obj2;
-								if (label1.getText().startsWith("*")) {
+							for (TabComponent obj2 : tabs) {
+								if (obj2.getLabel().getText().startsWith("*")) {
 									try {
-										saveFile(openTabs.get(nameLists.indexOf(obj2)));
+										saveFile(tabs.get(tabs.indexOf(obj2)));
 									} catch (Exception e1) {
 										JOptionPane.showMessageDialog(null, e1.getMessage(), "Unable to Save File!", JOptionPane.ERROR_MESSAGE);
 									}
@@ -171,7 +169,7 @@ public class ProjectEditor extends JFrame {
 						JSONArray updatedList = new JSONArray();
 						for (Object obj1 : projectList) {
 							JSONObject jsonObj = (JSONObject) obj1;
-							if (jsonObj.get("project-dir").equals(Arrays.stream(filepath).collect(Collectors.joining("\\")))) {
+							if (jsonObj.get("project-dir").equals(filepathStr)) {
 								jsonObj.replace("last-modified", Info.getTime("dd-MM-yyyy HH:mm"));
 							}
 							updatedList.add(jsonObj);
@@ -189,7 +187,7 @@ public class ProjectEditor extends JFrame {
 				System.exit(0);
 			}
 		});
-		setTitle(Info.getName() + " - " + Arrays.stream(filepath).collect(Collectors.joining("\\")));
+		setTitle(Info.getName() + " - " + filepathStr);
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 1000, 600);
 		setMinimumSize(new Dimension(900, 650));
@@ -290,7 +288,7 @@ public class ProjectEditor extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (tabbedPane.getTabCount() == 0) return;
 				try {
-					saveFile(openTabs.get(tabbedPane.getSelectedIndex()));
+					saveFile(tabs.get(tabbedPane.getSelectedIndex()));
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, e1.getMessage(), "Unable to Save File!", JOptionPane.ERROR_MESSAGE);
 				}
@@ -310,7 +308,7 @@ public class ProjectEditor extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (tabbedPane.getTabCount() == 0) return;
 				try {
-					deleteFile(openTabs.get(tabbedPane.getSelectedIndex()));
+					deleteFile(tabs.get(tabbedPane.getSelectedIndex()));
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, e1.getMessage(), "Unable to Delete File!", JOptionPane.ERROR_MESSAGE);
 				}
@@ -330,7 +328,7 @@ public class ProjectEditor extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (tabbedPane.getTabCount() == 0) return;
 				try {
-					compileFile(openTabs.get(tabbedPane.getSelectedIndex()));
+					compileFile(tabs.get(tabbedPane.getSelectedIndex()));
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, e1.getMessage(), "Unable to Compile File!", JOptionPane.ERROR_MESSAGE);
 				}
@@ -350,7 +348,7 @@ public class ProjectEditor extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (tabbedPane.getTabCount() == 0) return;
 				try {
-					runFile(openTabs.get(tabbedPane.getSelectedIndex()));
+					runFile(tabs.get(tabbedPane.getSelectedIndex()));
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, e1.getMessage(), "Unable to Run File!", JOptionPane.ERROR_MESSAGE);
 				}
@@ -441,9 +439,9 @@ public class ProjectEditor extends JFrame {
 
 				//Auto Indentation
 				try {
-					int curlyBlockCount = (int) text.substring(0, documents.get(tabbedPane.getSelectedIndex()).getCaretPosition()).chars().filter(ch -> ch == '{').count();
-					curlyBlockCount -= (int) text.substring(0, documents.get(tabbedPane.getSelectedIndex()).getCaretPosition()).chars().filter(ch -> ch == '}').count();
-					if (documents.get(tabbedPane.getSelectedIndex()).getCaretPosition() != 0 && text.charAt(documents.get(tabbedPane.getSelectedIndex()).getCaretPosition() - 1) == '\n') {
+					int curlyBlockCount = (int) text.substring(0, tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition()).chars().filter(ch -> ch == '{').count();
+					curlyBlockCount -= (int) text.substring(0, tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition()).chars().filter(ch -> ch == '}').count();
+					if (tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition() != 0 && text.charAt(tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition() - 1) == '\n') {
 						try {
 							Robot robot = new Robot();
 							for (int i = 0; i < curlyBlockCount; i++) {
@@ -461,10 +459,13 @@ public class ProjectEditor extends JFrame {
 				// Auto closing trigger
 				try {
 					for (String i : autoCloseTrigger) {
-						if ((text.charAt(documents.get(tabbedPane.getSelectedIndex()).getCaretPosition() - 1)) == i.charAt(0)) {
-							int x = documents.get(tabbedPane.getSelectedIndex()).getCaretPosition();
-							documents.get(tabbedPane.getSelectedIndex()).setText(text.substring(0, documents.get(tabbedPane.getSelectedIndex()).getCaretPosition()) + i.charAt(1) + text.substring(documents.get(tabbedPane.getSelectedIndex()).getCaretPosition()));
-							documents.get(tabbedPane.getSelectedIndex()).setCaretPosition(x);
+						if ((text.charAt(tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition() - 1)) == i.charAt(0)) {
+							int x = tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition();
+							tabs.get(tabbedPane.getSelectedIndex()).getTextPane().setText(
+									text.substring(0, tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition())
+									+ i.charAt(1)
+									+ text.substring(tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition()));
+							tabs.get(tabbedPane.getSelectedIndex()).getTextPane().setCaretPosition(x);
 						}
 					}
 				} catch (Exception e) {
@@ -598,8 +599,8 @@ public class ProjectEditor extends JFrame {
 
 			private void updateLog(DocumentEvent e) {
 				try {
-					if (!nameLists.get(tabbedPane.getSelectedIndex()).getText().startsWith("*"))
-						nameLists.get(tabbedPane.getSelectedIndex()).setText("*" + nameLists.get(tabbedPane.getSelectedIndex()).getText());
+					if (!tabs.get(tabbedPane.getSelectedIndex()).getLabel().getText().startsWith("*"))
+						tabs.get(tabbedPane.getSelectedIndex()).getLabel().setText("*" + tabs.get(tabbedPane.getSelectedIndex()).getLabel().getText());
 				} catch (Exception e1) {
 					//
 				}
@@ -611,7 +612,7 @@ public class ProjectEditor extends JFrame {
 	// Setting up the Project Explorer
 	private void setupFileTree() {
 		DefaultMutableTreeNode dirTree = new DefaultMutableTreeNode(filepath[filepath.length - 1]);
-		File currentDir = new File(Arrays.stream(filepath).collect(Collectors.joining("\\")));
+		File currentDir = new File(filepathStr);
 		File[] folders = currentDir.listFiles();
 		for (File i : folders) {
 			if (Arrays.stream(ignore).anyMatch(i.getName()::endsWith))
@@ -630,7 +631,7 @@ public class ProjectEditor extends JFrame {
 						try {
 							openFile(selPath.getPath());
 						} catch (Exception e1) {
-							JOptionPane.showMessageDialog(null, e1.getStackTrace(), "Couldn't Open File!", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, e1.getMessage(), "Couldn't Open File!", JOptionPane.ERROR_MESSAGE);
 						}
 				}
 			}
@@ -661,7 +662,7 @@ public class ProjectEditor extends JFrame {
 				return;
 			}
 		}
-		File file = new File(Arrays.stream(filepath).collect(Collectors.joining("\\")) + "\\src\\" + className + ".java");
+		File file = new File(filepathStr + "\\src\\" + className + ".java");
 		if (!file.exists())
 			try {
 				file.createNewFile();
@@ -680,61 +681,55 @@ public class ProjectEditor extends JFrame {
 	}
 
 	// Save a File
-	private void saveFile(String str) throws Exception {
-		String txt = documents.get(tabbedPane.getSelectedIndex()).getText(0, documents.get(tabbedPane.getSelectedIndex()).getText().length());
-		File file = new File(Arrays.stream(filepath).collect(Collectors.joining("\\")) + "\\" + str);
-		FileWriter fw = new FileWriter(file);
-		fw.write(txt);
+	private void saveFile(TabComponent tab) throws Exception {
+		FileWriter fw = new FileWriter(tab.getFile());
+		fw.write(tab.getTextPane().getText());
 		fw.close();
-		String labelTxt = nameLists.get(tabbedPane.getSelectedIndex()).getText();
-		if (labelTxt.startsWith("*")) nameLists.get(tabbedPane.getSelectedIndex()).setText(labelTxt.substring(1, labelTxt.length()));
+		tab.getLabel().setText(tab.getFileName());
 	}
 
 	// Delete a File
-	private void deleteFile(String str) {
-		int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " + str + "?", "Confirmation for Deletion of File!", JOptionPane.WARNING_MESSAGE);
+	private void deleteFile(TabComponent tab) {
+		int choice = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete " + tab.getFileName() + "?", "Confirmation for Deletion of File!", JOptionPane.WARNING_MESSAGE);
 		if (choice == JOptionPane.YES_OPTION) {
-			File file = new File(Arrays.stream(filepath).collect(Collectors.joining("\\")) + "\\" + str);
+			File file = tab.getFile();
 			file.delete();
+			tabs.remove(tabbedPane.getSelectedIndex());
 			tabbedPane.remove(tabbedPane.getSelectedIndex());
-			openTabs.remove(tabbedPane.getSelectedIndex() + 1);
-			nameLists.remove(tabbedPane.getSelectedIndex() + 1);
-			documents.remove(tabbedPane.getSelectedIndex() + 1);
 			checkIfNoOpenTabs();
 			setupFileTree();
 		}
 	}
 
 	// Compile File
-	private void compileFile(String str) throws Exception {
-		String path = Arrays.stream(filepath).collect(Collectors.joining("\\"));
-		File file = new File(path + "\\run.bat");
+	private void compileFile(TabComponent tab) throws Exception {
+		File file = new File(filepathStr + "\\run.bat");
 		if (!file.exists()) file.createNewFile();
 		FileWriter writer = new FileWriter(file);
 		String command = "";
-		command += "javac -d bin -cp lib\\* " + str + "\npause\nexit";
+		command += "javac -d bin -cp lib\\* src\\" + tab.getFilePackage() + tab.getFileName() + "\npause\nexit";
 		writer.write(command);
 		writer.close();
 		ProcessBuilder builder = new ProcessBuilder(new String[] {"cmd", "/c", "start", "run.bat"});
-		builder.directory(new File(path));
+		builder.directory(new File(filepathStr));
 		Process p = builder.start();
 		p.info();
 	}
 
 	// Run File
-	private void runFile(String str) throws Exception {
-		String path = Arrays.stream(filepath).collect(Collectors.joining("\\"));
-		File file = new File(path + "\\run.bat");
+	private void runFile(TabComponent tab) throws Exception {
+		File file = new File(filepathStr + "\\run.bat");
 		if (!file.exists()) file.createNewFile();
 		FileWriter writer = new FileWriter(file);
 		String command = "";
-		command += "cd bin\ncls\n";
-		command += "java -cp \"" + path + "\\lib\\*\"; " + nameLists.get(tabbedPane.getSelectedIndex()).getText().replace(".java", "");
+		command += "java -cp \"" + filepathStr + "\\lib\\*;bin\"; " +
+				tabs.get(tabbedPane.getSelectedIndex()).getFilePackage().replaceAll("\\\\", ".") +
+				tabs.get(tabbedPane.getSelectedIndex()).getLabel().getText().replace(".java", "");
 		command += "\npause\nexit";
 		writer.write(command);
 		writer.close();
 		ProcessBuilder builder = new ProcessBuilder(new String[] {"cmd", "/c", "start", "run.bat"});
-		builder.directory(new File(path));
+		builder.directory(new File(filepathStr));
 		Process p = builder.start();
 		p.info();
 	}
@@ -743,7 +738,6 @@ public class ProjectEditor extends JFrame {
 	private DefaultMutableTreeNode getFiles(String str) {
 		File file = new File(str);
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(new Contact(file.getName(), file.isFile()));
-		//DefaultMutableTreeNode node = new DefaultMutableTreeNode(file.getName());
 		if (file.isDirectory()) {
 			File[] files = file.listFiles();
 			for (File i : files) {
@@ -760,21 +754,23 @@ public class ProjectEditor extends JFrame {
 		for (int i = 0; i < strFile.length; i++) strFile[i] = fileArr[i + 1].toString();
 		String filedir = Arrays.stream(strFile).collect(Collectors.joining("\\"));
 		System.out.println(filedir);
-		File file = new File(Arrays.stream(filepath).collect(Collectors.joining("\\")) + "\\" + filedir);
+		File file = new File(filepathStr + "\\" + filedir);
 		if (!file.isDirectory()) {
-			if (!openTabs.contains(filedir))
-				createNewTab(Arrays.stream(filepath).collect(Collectors.joining("\\")) + "\\" + filedir, filedir);
-			else {
-				int xi = openTabs.indexOf(filedir);
-				tabbedPane.setSelectedIndex(xi);
-			}
+			createNewTab(filedir);
 		}
 	}
 
 	// Creates a new tab for a file
-	private void createNewTab(String filepath, String filedir) throws Exception {
-		String text = ""; File file;
-		FileReader reader = new FileReader(file = new File(filepath));
+	private void createNewTab(String filedir) throws Exception {
+		for (TabComponent tab : tabs) {
+			System.out.println(tab.getFilePackage() + tab.getFileName());
+			if (filedir.equals(tab.getFilePackage() + tab.getFileName()))
+				return;
+		}
+		
+		String text = "";
+		File file = new File(filepathStr + "\\" + filedir);
+		FileReader reader = new FileReader(file);
 		int i;
 		while ((i = reader.read()) != -1)
 			text += (char) i;
@@ -782,7 +778,7 @@ public class ProjectEditor extends JFrame {
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		tabbedPane.addTab(file.getName(), null, scrollPane, filepath);
+		tabbedPane.addTab(file.getName(), null, scrollPane, filepathStr + "\\" + filedir);
 		scrollPane.setBorder(null);
 		tabbedPane.setSelectedComponent(scrollPane);
 
@@ -846,9 +842,7 @@ public class ProjectEditor extends JFrame {
 				for(int i = 0; i < tabbedPane.getTabCount(); i++) {
 					if(SwingUtilities.isDescendingFrom(button, tabbedPane.getTabComponentAt(i))) {
 						tabbedPane.remove(i);
-						openTabs.remove(i);
-						nameLists.remove(i);
-						documents.remove(i);
+						tabs.remove(i);
 						checkIfNoOpenTabs();
 						break;
 					}
@@ -894,20 +888,19 @@ public class ProjectEditor extends JFrame {
 		closeButton.setContentAreaFilled(false);
 		closeButton.setBorderPainted(false);
 		tabComponent.add(closeButton, BorderLayout.CENTER);
-
-		tabbedPane.setTabComponentAt(openTabs.size(), tabComponent);
+		
+		tabbedPane.add(scrollPane);
+		tabbedPane.setTabComponentAt(tabs.size(), tabComponent);
 		tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
 
 		scrollPane.setViewportView(editorPane);
-		openTabs.add(filedir);
-		nameLists.add(tabLabel);
-		documents.add(editorPane);
+		tabs.add(new TabComponent(file, tabLabel, editorPane, filedir.substring(4, filedir.length() - file.getName().length())));
 		checkIfNoOpenTabs();
 	}
 
 	// Checks if no tabs are open
 	private void checkIfNoOpenTabs() {
-		if(openTabs.size() == 0) {
+		if(tabs.size() == 0) {
 			editorPanel.remove(tabbedPane);
 			editorPanel.add(noOpenTabsLabel, BorderLayout.CENTER);
 		} else {
