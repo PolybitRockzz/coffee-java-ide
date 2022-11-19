@@ -31,6 +31,10 @@ public class TabComponent {
 		return packages;
 	}
 	
+	public boolean isJavaFile() {
+		return packages != null;
+	}
+	
 	public JLabel getLabel() {
 		return label;
 	}

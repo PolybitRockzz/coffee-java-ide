@@ -47,8 +47,6 @@ import org.json.simple.parser.JSONParser;
 import javax.swing.JOptionPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -703,6 +701,7 @@ public class ProjectEditor extends JFrame {
 
 	// Compile File
 	private void compileFile(TabComponent tab) throws Exception {
+		if (tab.getFilePackage() == null) return;
 		File file = new File(filepathStr + "\\run.bat");
 		if (!file.exists()) file.createNewFile();
 		FileWriter writer = new FileWriter(file);
@@ -718,6 +717,7 @@ public class ProjectEditor extends JFrame {
 
 	// Run File
 	private void runFile(TabComponent tab) throws Exception {
+		if (tab.getFilePackage() == null) return;
 		File file = new File(filepathStr + "\\run.bat");
 		if (!file.exists()) file.createNewFile();
 		FileWriter writer = new FileWriter(file);
@@ -753,23 +753,22 @@ public class ProjectEditor extends JFrame {
 		String[] strFile = new String[fileArr.length - 1];
 		for (int i = 0; i < strFile.length; i++) strFile[i] = fileArr[i + 1].toString();
 		String filedir = Arrays.stream(strFile).collect(Collectors.joining("\\"));
-		System.out.println(filedir);
+		System.out.println("s" + filedir);
 		File file = new File(filepathStr + "\\" + filedir);
 		if (!file.isDirectory()) {
-			createNewTab(filedir);
+			createNewTab(file, filedir);
 		}
 	}
 
 	// Creates a new tab for a file
-	private void createNewTab(String filedir) throws Exception {
+	private void createNewTab(File file, String filedir) throws Exception {
 		for (TabComponent tab : tabs) {
-			System.out.println(tab.getFilePackage() + tab.getFileName());
-			if (filedir.equals(tab.getFilePackage() + tab.getFileName()))
+			System.out.println("d" + tab.getFilePackage() + tab.getFileName());
+			if (file.getCanonicalPath().contains(tab.getFilePackage() + tab.getFileName()))
 				return;
 		}
 		
 		String text = "";
-		File file = new File(filepathStr + "\\" + filedir);
 		FileReader reader = new FileReader(file);
 		int i;
 		while ((i = reader.read()) != -1)
@@ -778,7 +777,7 @@ public class ProjectEditor extends JFrame {
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		tabbedPane.addTab(file.getName(), null, scrollPane, filepathStr + "\\" + filedir);
+		tabbedPane.addTab(file.getName(), null, scrollPane, file.getAbsolutePath());
 		scrollPane.setBorder(null);
 		tabbedPane.setSelectedComponent(scrollPane);
 
@@ -793,10 +792,15 @@ public class ProjectEditor extends JFrame {
 
 		tabComponent.add(tabLabel, BorderLayout.WEST);
 
-		DefaultStyledDocument doc = initializeDoc();
-		doc.addDocumentListener(getDocumentListener());
+		DefaultStyledDocument javadoc = initializeDoc();
+		javadoc.addDocumentListener(getDocumentListener());
 
-		JTextPane editorPane = new JTextPane(doc);
+		JTextPane editorPane;
+		if (file.getName().endsWith(".java")) {
+			editorPane = new JTextPane(javadoc);
+		} else {
+			editorPane = new JTextPane();
+		}
 		editorPane.setText(text);
 		editorPane.setBackground(Info.getThemeColor(1));
 		editorPane.setForeground(Info.getThemeColor(4));
@@ -840,7 +844,7 @@ public class ProjectEditor extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JButton button = (JButton)e.getSource();
 				for(int i = 0; i < tabbedPane.getTabCount(); i++) {
-					if(SwingUtilities.isDescendingFrom(button, tabbedPane.getTabComponentAt(i))) {
+					if(button.getParent() == tabbedPane.getTabComponentAt(i)) {
 						tabbedPane.remove(i);
 						tabs.remove(i);
 						checkIfNoOpenTabs();
@@ -894,7 +898,10 @@ public class ProjectEditor extends JFrame {
 		tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
 
 		scrollPane.setViewportView(editorPane);
-		tabs.add(new TabComponent(file, tabLabel, editorPane, filedir.substring(4, filedir.length() - file.getName().length())));
+		if (file.getName().endsWith(".java"))
+			tabs.add(new TabComponent(file, tabLabel, editorPane, filedir.substring(4, filedir.length() - file.getName().length())));
+		else
+			tabs.add(new TabComponent(file, tabLabel, editorPane, null));
 		checkIfNoOpenTabs();
 	}
 
