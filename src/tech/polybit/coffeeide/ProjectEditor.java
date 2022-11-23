@@ -845,6 +845,12 @@ public class ProjectEditor extends JFrame {
 				JButton button = (JButton)e.getSource();
 				for(int i = 0; i < tabbedPane.getTabCount(); i++) {
 					if(button.getParent() == tabbedPane.getTabComponentAt(i)) {
+						if (tabs.get(i).getLabel().getText().startsWith("*")) {
+							int choice = JOptionPane.showConfirmDialog(null, "Want to save " + tabs.get(i).getFileName() + " before closing?", "File isn't saved", JOptionPane.WARNING_MESSAGE);
+							if (choice == JOptionPane.YES_OPTION) {
+								saveButton.doClick();
+							}
+						}
 						tabbedPane.remove(i);
 						tabs.remove(i);
 						checkIfNoOpenTabs();
