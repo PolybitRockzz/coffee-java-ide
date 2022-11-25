@@ -19,6 +19,7 @@ public class Info {
 
 	public static String theme = "dark";
 	public static int tabSize = 4;
+	public static boolean autoCompile = false;
 
 	public static String getName() {
 		return "Coffee IDE";
@@ -60,7 +61,12 @@ public class Info {
 				"Shhh... we're secretly mining crypto...",
 				"Default packages are discouraged",
 				"Take a break, you don't deserve it, but still...",
-				"sus"
+				"sus",
+				"light mode users are photolytic parasites",
+				"Debug Tools? Nah I use print statements everywhere bruv",
+				"cunt",
+				"Practiced Compassion",
+				"Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S",
 		};
 		return messages[(int) (Math.random() * messages.length)];
 	}

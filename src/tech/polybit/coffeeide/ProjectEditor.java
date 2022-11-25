@@ -7,12 +7,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
 import javax.swing.text.TabSet;
 import javax.swing.text.TabStop;
 
@@ -23,7 +20,6 @@ import javax.swing.JSplitPane;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Robot;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -32,7 +28,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import javax.swing.JScrollPane;
@@ -43,6 +38,9 @@ import javax.swing.tree.TreePath;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import tech.polybit.coffeeide.components.Contact;
+import tech.polybit.coffeeide.components.MyTreeCellRenderer;
 
 import javax.swing.JOptionPane;
 import javax.swing.ScrollPaneConstants;
@@ -70,32 +68,12 @@ public class ProjectEditor extends JFrame {
 	private JTree fileTree;
 
 	private JButton saveButton;
+	private JButton compileButton;
 
 	private String[] filepath;
 	private String filepathStr;
-	private final StyleContext styleContext;
-	private final AttributeSet attributeKeyword, attributeSpecialSymbols, attributeNumbers, attributeComments, attributeStrings, attributeNormal;
 
 	private String[] ignore = {"bin", ".class", "run.bat", ".settings"};
-	private String[] keywords = {
-			"abstract", "assert", "boolean", "break", "byte", "case",
-			"catch", "char", "class", "continue", "default", "do",
-			"double", "else", "enum", "extends", "final", "finally",
-			"float", "for", "if", "implements", "import", "instanceof",
-			"int", "interface", "long", "native", "new", "null", "package",
-			"private", "protected", "public", "return", "short", "static",
-			"strictfp", "super", "switch", "synchronized", "this", "throw",
-			"throws", "transient", "try", "void", "volatile", "while",
-			"const", "goto"
-	};
-	private String[] symbols = {
-			"+", "-", "*", "/", "%", "=", "?", ":", ";",
-			"{", "}", "."
-	};
-
-	private String[] autoCloseTrigger = {
-			"()", "\"\"", "\'\'", "{}", "[]"
-	};
 
 	private ArrayList<TabComponent> tabs;
 
@@ -103,14 +81,6 @@ public class ProjectEditor extends JFrame {
 	public ProjectEditor(String[] filepath) {
 		this.filepath = filepath;
 		this.filepathStr = Arrays.stream(filepath).collect(Collectors.joining("\\"));
-		
-		styleContext = StyleContext.getDefaultStyleContext();
-		attributeKeyword = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(6));
-		attributeSpecialSymbols = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(8));
-		attributeNumbers = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(7));
-		attributeComments = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(5));
-		attributeStrings = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(9));
-		attributeNormal = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(4));
 		display();
 	}
 
@@ -319,7 +289,7 @@ public class ProjectEditor extends JFrame {
 		deleteButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		leftPanel.add(deleteButton);
 
-		JButton compileButton = new JButton("Compile");
+		compileButton = new JButton("Compile");
 		compileButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -337,6 +307,10 @@ public class ProjectEditor extends JFrame {
 		compileButton.setBackground(Info.getThemeColor(0));
 		compileButton.setForeground(Info.getThemeColor(4));
 		compileButton.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		if (Info.autoCompile) {
+			compileButton.setEnabled(false);
+			compileButton.setText("Auto Compile is Enabled");
+		}
 		rightPanel.add(compileButton);
 
 		JButton runButton = new JButton("Run");
@@ -369,211 +343,6 @@ public class ProjectEditor extends JFrame {
 
 		checkIfNoOpenTabs();
 		setVisible(true);
-	}
-
-	//Initialize Document (for Styling)
-	private DefaultStyledDocument initializeDoc() {
-		return new DefaultStyledDocument() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 5172740319640565443L;
-
-			public void insertString (int offset, String str, AttributeSet a) throws BadLocationException {
-				super.insertString(offset, str, a);
-
-				String text = getText(0, getLength());
-				
-				setCharacterAttributes(0, text.length(), attributeNormal, false);
-
-				int wordL = 0;
-				int wordR = 0;
-
-				while (wordR <= text.length() - 1) {
-					if (String.valueOf(text.charAt(wordR)).matches("\\W")) {
-						if (text.substring(wordL, wordR).matches("(\\W)*(" + Arrays.stream(keywords).collect(Collectors.joining("|")) + ")"))
-							setCharacterAttributes(wordL, wordR - wordL, attributeKeyword, false);
-						else if (text.substring(wordL, wordR).matches("(\\W)*(\\d)"))
-							setCharacterAttributes(wordL, wordR - wordL, attributeNumbers, false);
-						else
-							setCharacterAttributes(wordL, wordR - wordL, attributeNormal, false);
-						wordL = wordR + 1; wordR++;
-					}
-					wordR++;
-				}
-
-				for (int i = 0; i < getLength(); i++) {
-					if (Arrays.asList(symbols).contains(Character.toString(text.charAt(i))))
-						setCharacterAttributes(i, 1, attributeSpecialSymbols, false);
-				}
-
-				// Auto comment highlighting
-				int start2 = -1, end2 = -1, fx = 0;
-				while (true) {
-					start2 = text.indexOf("//", fx);
-					end2 = text.indexOf("\n", start2 + 2);
-					if (start2 == -1) break;
-					if (start2 != -1 && end2 != -1) {
-						setCharacterAttributes(start2, end2 - start2, attributeComments, false);
-						fx = end2 + 1;
-						start2 = -1;
-						end2 = -1;
-					}
-				}
-
-				// Auto comment highlighting
-				int start3 = -1, end3 = -1; fx = 0;
-				while (true) {
-					start3 = text.indexOf("/*", fx);
-					end3 = text.indexOf("*/", start3 + 2);
-					if (start3 == -1 || end3 == -1) break;
-					if (start3 != -1 && end3 != -1) {
-						setCharacterAttributes(start3, end3 - start3 + 2, attributeComments, false);
-						fx = end3 + 2;
-						start3 = -1;
-						end3 = -1;
-					}
-				}
-
-				//Auto Indentation
-				try {
-					int curlyBlockCount = (int) text.substring(0, tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition()).chars().filter(ch -> ch == '{').count();
-					curlyBlockCount -= (int) text.substring(0, tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition()).chars().filter(ch -> ch == '}').count();
-					if (tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition() != 0 && text.charAt(tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition() - 1) == '\n') {
-						try {
-							Robot robot = new Robot();
-							for (int i = 0; i < curlyBlockCount; i++) {
-								robot.keyPress(KeyEvent.VK_TAB);
-								robot.keyRelease(KeyEvent.VK_TAB);
-							}
-						} catch (Exception e) {
-							//
-						}
-					}
-				} catch (Exception e) {
-					//
-				}
-
-				// Auto closing trigger
-				try {
-					for (String i : autoCloseTrigger) {
-						if ((text.charAt(tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition() - 1)) == i.charAt(0)) {
-							int x = tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition();
-							tabs.get(tabbedPane.getSelectedIndex()).getTextPane().setText(
-									text.substring(0, tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition())
-									+ i.charAt(1)
-									+ text.substring(tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition()));
-							tabs.get(tabbedPane.getSelectedIndex()).getTextPane().setCaretPosition(x);
-						}
-					}
-				} catch (Exception e) {
-					//
-				}
-				
-				// String highlighting
-				Scanner sc = new Scanner(text);
-				int totalCount = 0;
-				while (sc.hasNextLine()) {
-					String string = sc.nextLine();
-					boolean inString = false; int backslashCount = 0;
-					for (int i = 0; i < string.length(); i++) {
-						if (string.charAt(i) == '"' && backslashCount % 2 == 0) {
-							inString = !inString; backslashCount = 0;
-							if (!inString)
-								setCharacterAttributes(i + totalCount, 1, attributeStrings, false);
-						} else if (string.charAt(i) == '\\') {
-							backslashCount++;
-						} else {
-							backslashCount = 0;
-						}
-						if (inString) {
-							setCharacterAttributes(i + totalCount, 1, attributeStrings, false);
-						}
-					}
-					totalCount += string.length() + 1;
-				}
-				sc.close();
-			}
-
-			public void remove (int offs, int len) throws BadLocationException {
-				super.remove(offs, len);
-
-				String text = getText(0, getLength());
-				
-				setCharacterAttributes(0, text.length(), attributeNormal, false);
-
-				int wordL = 0;
-				int wordR = 0;
-
-				while (wordR <= text.length() - 1) {
-					if (String.valueOf(text.charAt(wordR)).matches("\\W")) {
-						if (text.substring(wordL, wordR).matches("(\\W)*(" + Arrays.stream(keywords).collect(Collectors.joining("|")) + ")"))
-							setCharacterAttributes(wordL, wordR - wordL, attributeKeyword, false);
-						else if (text.substring(wordL, wordR).matches("(\\W)*(\\d)"))
-							setCharacterAttributes(wordL, wordR - wordL, attributeNumbers, false);
-						else
-							setCharacterAttributes(wordL, wordR - wordL, attributeNormal, false);
-						wordL = wordR + 1; wordR++;
-					}
-					wordR++;
-				}
-
-				for (int i1 = 0; i1 < getLength(); i1++) {
-					if (Arrays.asList(symbols).contains(Character.toString(text.charAt(i1))))
-						setCharacterAttributes(i1, 1, attributeSpecialSymbols, false);
-				}
-
-				int start2 = -1, end2 = -1, fx = 0;
-				while (true) {
-					start2 = text.indexOf("//", fx);
-					end2 = text.indexOf("\n", start2 + 2);
-					if (start2 == -1) break;
-					if (start2 != -1 && end2 != -1) {
-						setCharacterAttributes(start2, end2 - start2, attributeComments, false);
-						fx = end2 + 1;
-						start2 = -1;
-						end2 = -1;
-					}
-				}
-
-				int start3 = -1, end3 = -1; fx = 0;
-				while (true) {
-					start3 = text.indexOf("/*", fx);
-					end3 = text.indexOf("*/", start3 + 2);
-					if (start3 == -1 || end3 == -1) break;
-					if (start3 != -1 && end3 != -1) {
-						setCharacterAttributes(start3, end3 - start3 + 2, attributeComments, false);
-						fx = end3 + 2;
-						start3 = -1;
-						end3 = -1;
-					}
-				}
-				
-				// String highlighting
-				Scanner sc = new Scanner(text);
-				int totalCount = 0;
-				while (sc.hasNextLine()) {
-					String string = sc.nextLine();
-					boolean inString = false; int backslashCount = 0;
-					for (int i = 0; i < string.length(); i++) {
-						if (string.charAt(i) == '"' && backslashCount % 2 == 0) {
-							inString = !inString; backslashCount = 0;
-							if (!inString)
-								setCharacterAttributes(i + totalCount, 1, attributeStrings, false);
-						} else if (string.charAt(i) == '\\') {
-							backslashCount++;
-						} else {
-							backslashCount = 0;
-						}
-						if (inString) {
-							setCharacterAttributes(i + totalCount, 1, attributeStrings, false);
-						}
-					}
-					totalCount += string.length() + 1;
-				}
-				sc.close();
-			}
-		};
 	}
 
 	// Document Listener
@@ -684,6 +453,9 @@ public class ProjectEditor extends JFrame {
 		fw.write(tab.getTextPane().getText());
 		fw.close();
 		tab.getLabel().setText(tab.getFileName());
+		if (Info.autoCompile) {
+			compileFile(tab);
+		}
 	}
 
 	// Delete a File
@@ -792,14 +564,15 @@ public class ProjectEditor extends JFrame {
 
 		tabComponent.add(tabLabel, BorderLayout.WEST);
 
-		DefaultStyledDocument javadoc = initializeDoc();
-		javadoc.addDocumentListener(getDocumentListener());
-
 		JTextPane editorPane;
 		if (file.getName().endsWith(".java")) {
+			DefaultStyledDocument javadoc = Documents.getJavaStyledDoc(tabs, tabbedPane);
+			javadoc.addDocumentListener(getDocumentListener());
 			editorPane = new JTextPane(javadoc);
 		} else {
-			editorPane = new JTextPane();
+			DefaultStyledDocument doc = Documents.getDefaultStyledDoc(tabs, tabbedPane);
+			doc.addDocumentListener(getDocumentListener());
+			editorPane = new JTextPane(doc);
 		}
 		editorPane.setText(text);
 		editorPane.setBackground(Info.getThemeColor(1));
@@ -926,10 +699,8 @@ public class ProjectEditor extends JFrame {
 	// Sets the indentation count in the text editor
 	private static void setTabs(final JTextPane textPane, int charactersPerTab) {
 		FontMetrics fm = textPane.getFontMetrics( textPane.getFont() );
-		//int charWidth = fm.charWidth( 'w' );
 		int charWidth = fm.charWidth( ' ' );
 		int tabWidth = charWidth * charactersPerTab;
-		//int tabWidth = 100;
 
 		TabStop[] tabs = new TabStop[5];
 

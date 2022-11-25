@@ -1,6 +1,6 @@
-package tech.polybit.coffeeide;
+package tech.polybit.coffeeide.components;
 
-class Contact {
+public class Contact {
 	private boolean someProperty;
 	private String name;
 

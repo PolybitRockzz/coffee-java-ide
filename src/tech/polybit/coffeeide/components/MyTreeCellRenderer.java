@@ -1,4 +1,4 @@
-package tech.polybit.coffeeide;
+package tech.polybit.coffeeide.components;
 
 import java.awt.Component;
 
@@ -7,7 +7,7 @@ import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
-class MyTreeCellRenderer extends DefaultTreeCellRenderer {
+public class MyTreeCellRenderer extends DefaultTreeCellRenderer {
 
 	/**
 	 * 
