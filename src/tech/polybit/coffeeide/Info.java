@@ -30,11 +30,11 @@ public class Info {
 	}
 
 	public static String getVersion() {
-		return "0.1.1";
+		return "0.1.2";
 	}
 
 	public static String getFullVersion() {
-		return "v0.1.1 ALPHA";
+		return "v0.1.2 ALPHA";
 	}
 
 	public static String getTime(String str) {
