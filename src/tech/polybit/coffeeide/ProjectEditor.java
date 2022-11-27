@@ -525,7 +525,6 @@ public class ProjectEditor extends JFrame {
 		String[] strFile = new String[fileArr.length - 1];
 		for (int i = 0; i < strFile.length; i++) strFile[i] = fileArr[i + 1].toString();
 		String filedir = Arrays.stream(strFile).collect(Collectors.joining("\\"));
-		System.out.println("s" + filedir);
 		File file = new File(filepathStr + "\\" + filedir);
 		if (!file.isDirectory()) {
 			createNewTab(file, filedir);
@@ -535,7 +534,6 @@ public class ProjectEditor extends JFrame {
 	// Creates a new tab for a file
 	private void createNewTab(File file, String filedir) throws Exception {
 		for (TabComponent tab : tabs) {
-			System.out.println("d" + tab.getFilePackage() + tab.getFileName());
 			if (file.getCanonicalPath().contains(tab.getFilePackage() + tab.getFileName()))
 				return;
 		}
