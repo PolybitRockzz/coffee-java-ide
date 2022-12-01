@@ -399,6 +399,7 @@ public class ProjectEditor extends JFrame {
 							openFile(selPath.getPath());
 						} catch (Exception e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), "Couldn't Open File!", JOptionPane.ERROR_MESSAGE);
+							e1.printStackTrace();
 						}
 				}
 			}
@@ -700,7 +701,7 @@ public class ProjectEditor extends JFrame {
 		int charWidth = fm.charWidth( ' ' );
 		int tabWidth = charWidth * charactersPerTab;
 
-		TabStop[] tabs = new TabStop[5];
+		TabStop[] tabs = new TabStop[9];
 
 		for (int j = 0; j < tabs.length; j++)
 		{

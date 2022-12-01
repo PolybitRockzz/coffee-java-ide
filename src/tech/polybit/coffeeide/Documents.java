@@ -19,7 +19,6 @@ public class Documents {
 	// Styling Attributes
 	private static final StyleContext styleContext = StyleContext.getDefaultStyleContext();
 	private static final AttributeSet attributeKeyword = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(6));
-	private static final AttributeSet attributeSpecialSymbols = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(8));
 	private static final AttributeSet attributeNumbers = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(7));
 	private static final AttributeSet attributeComments = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(5));
 	private static final AttributeSet attributeStrings = styleContext.addAttribute(styleContext.getEmptySet(), StyleConstants.Foreground, Info.getThemeColor(9));
@@ -36,16 +35,13 @@ public class Documents {
 			"throws", "transient", "try", "void", "volatile", "while",
 			"const", "goto"
 	};
-	private static final String[] symbols = {
-			"+", "-", "*", "/", "%", "=", "?", ":", ";",
-			"{", "}", "."
-	};
 
 	private static final String[] autoCloseTrigger = {
 			"()", "\"\"", "\'\'", "{}", "[]"
 	};
 	
 	public static DefaultStyledDocument getJavaStyledDoc(ArrayList<TabComponent> tabs, JTabbedPane tabbedPane) {
+		
 		return new DefaultStyledDocument() {
 			/**
 			 * 
@@ -56,13 +52,22 @@ public class Documents {
 				super.insertString(offset, str, a);
 
 				String text = getText(0, getLength());
+				String trimmedText = str;
 				
-				setCharacterAttributes(0, text.length(), attributeNormal, false);
+				int totalCount;
+				trimmedText = text.substring(
+					totalCount = (text.substring(0, offset).lastIndexOf("\n") == -1 ? 0 : text.substring(0, offset).lastIndexOf("\n") + 1),
+					text.substring(offset + str.length()).indexOf("\n") == -1 ? text.length() : offset + str.length() + text.substring(offset + str.length()).indexOf("\n")
+				);
+				
+				System.out.println(trimmedText);
+				
+				setCharacterAttributes(totalCount, trimmedText.length(), attributeNormal, false);
 
 				int wordL = 0;
 				int wordR = 0;
 
-				while (wordR <= text.length() - 1) {
+				while (wordR <= trimmedText.length() - 1) {
 					if (String.valueOf(text.charAt(wordR)).matches("\\W")) {
 						if (text.substring(wordL, wordR).matches("(\\W)*(" + Arrays.stream(keywords).collect(Collectors.joining("|")) + ")"))
 							setCharacterAttributes(wordL, wordR - wordL, attributeKeyword, false);
@@ -70,32 +75,50 @@ public class Documents {
 							setCharacterAttributes(wordL, wordR - wordL, attributeNumbers, false);
 						else
 							setCharacterAttributes(wordL, wordR - wordL, attributeNormal, false);
-						wordL = wordR + 1; wordR++;
+						wordL = wordR;
 					}
 					wordR++;
 				}
-
-				for (int i = 0; i < getLength(); i++) {
-					if (Arrays.asList(symbols).contains(Character.toString(text.charAt(i))))
-						setCharacterAttributes(i, 1, attributeSpecialSymbols, false);
-				}
-
-				// Auto comment highlighting
-				int start2 = -1, end2 = -1, fx = 0;
-				while (true) {
-					start2 = text.indexOf("//", fx);
-					end2 = text.indexOf("\n", start2 + 2);
-					if (start2 == -1) break;
-					if (start2 != -1 && end2 != -1) {
-						setCharacterAttributes(start2, end2 - start2, attributeComments, false);
-						fx = end2 + 1;
-						start2 = -1;
-						end2 = -1;
+				
+				// String highlighting
+				String string = "";
+				Scanner sc = new Scanner(trimmedText);
+				int stringCount = 0;
+				while (sc.hasNextLine()) {
+					string = sc.nextLine();
+					boolean inString = false, inChar = false; int backslashCount = 0;
+					for (int i = 0; i < string.length(); i++) {
+						if (string.charAt(i) == '"' && backslashCount % 2 == 0 && !inChar) {
+							inString = !inString; backslashCount = 0;
+							if (!inString)
+								setCharacterAttributes(i + stringCount + totalCount, 1, attributeStrings, false);
+						} else if (string.charAt(i) == '\'' && backslashCount % 2 == 0 && !inString) {
+							inChar = !inChar; backslashCount = 0;
+							if (!inChar)
+								setCharacterAttributes(i + stringCount + totalCount, 1, attributeStrings, false);
+						} else if (string.charAt(i) == '\\') {
+							backslashCount++;
+						} else {
+							backslashCount = 0;
+						}
+						if (inString) {
+							setCharacterAttributes(i + stringCount + totalCount, 1, attributeStrings, false);
+						} if (inChar) {
+							setCharacterAttributes(i + stringCount + totalCount, 1, attributeStrings, false);
+						}
 					}
+					stringCount += string.length() + 1;
+				}
+				sc.close();
+
+				// Auto comment highlighting
+				int start2 = trimmedText.indexOf("//", totalCount);
+				if (start2 != -1) {
+					setCharacterAttributes(totalCount + start2, trimmedText.length(), attributeComments, false);
 				}
 
 				// Auto comment highlighting
-				int start3 = -1, end3 = -1; fx = 0;
+				int start3 = -1, end3 = -1; int fx = totalCount;
 				while (true) {
 					start3 = text.indexOf("/*", fx);
 					end3 = text.indexOf("*/", start3 + 2);
@@ -109,142 +132,36 @@ public class Documents {
 				}
 
 				//Auto Indentation
-				try {
-					int curlyBlockCount = (int) text.substring(0, tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition()).chars().filter(ch -> ch == '{').count();
-					curlyBlockCount -= (int) text.substring(0, tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition()).chars().filter(ch -> ch == '}').count();
-					if (tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition() != 0 && text.charAt(tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition() - 1) == '\n') {
-						try {
-							Robot robot = new Robot();
-							for (int i = 0; i < curlyBlockCount; i++) {
-								robot.keyPress(KeyEvent.VK_TAB);
-								robot.keyRelease(KeyEvent.VK_TAB);
-							}
-						} catch (Exception e) {
-							//
+				int curlyBlockCount = (int) text.substring(0, offset + 1).chars().filter(ch -> ch == '{').count();
+				curlyBlockCount -= (int) text.substring(0, offset + 1).chars().filter(ch -> ch == '}').count();
+				if (text.charAt(offset) == '\n') {
+					try {
+						Robot robot = new Robot();
+						for (int i = 0; i < curlyBlockCount; i++) {
+							robot.keyPress(KeyEvent.VK_TAB);
+							robot.keyRelease(KeyEvent.VK_TAB);
 						}
-					}
-				} catch (Exception e) {
-					//
-				}
-
-				// Auto closing trigger
-				try {
-					for (String i : autoCloseTrigger) {
-						if ((text.charAt(tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition() - 1)) == i.charAt(0)) {
-							int x = tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition();
-							tabs.get(tabbedPane.getSelectedIndex()).getTextPane().setText(
-									text.substring(0, tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition())
-									+ i.charAt(1)
-									+ text.substring(tabs.get(tabbedPane.getSelectedIndex()).getTextPane().getCaretPosition()));
-							tabs.get(tabbedPane.getSelectedIndex()).getTextPane().setCaretPosition(x);
-						}
-					}
-				} catch (Exception e) {
-					//
+					} catch (Exception e) {}
 				}
 				
-				// String highlighting
-				Scanner sc = new Scanner(text);
-				int totalCount = 0;
-				while (sc.hasNextLine()) {
-					String string = sc.nextLine();
-					boolean inString = false; int backslashCount = 0;
-					for (int i = 0; i < string.length(); i++) {
-						if (string.charAt(i) == '"' && backslashCount % 2 == 0) {
-							inString = !inString; backslashCount = 0;
-							if (!inString)
-								setCharacterAttributes(i + totalCount, 1, attributeStrings, false);
-						} else if (string.charAt(i) == '\\') {
-							backslashCount++;
-						} else {
-							backslashCount = 0;
-						}
-						if (inString) {
-							setCharacterAttributes(i + totalCount, 1, attributeStrings, false);
-						}
+				//Auto closing
+				for (String i : autoCloseTrigger) {
+					if (str.equals(String.valueOf(i.charAt(0)))) {
+						super.insertString(offset + 1, String.valueOf(i.charAt(1)), a);
+						try {
+							Robot robot = new Robot();
+							robot.keyRelease(KeyEvent.VK_SHIFT);
+							robot.keyPress(KeyEvent.VK_LEFT);
+							robot.keyRelease(KeyEvent.VK_LEFT);
+						} catch (Exception e) {}
 					}
-					totalCount += string.length() + 1;
 				}
-				sc.close();
+				
 			}
 
 			public void remove (int offs, int len) throws BadLocationException {
 				super.remove(offs, len);
-
-				String text = getText(0, getLength());
-				
-				setCharacterAttributes(0, text.length(), attributeNormal, false);
-
-				int wordL = 0;
-				int wordR = 0;
-
-				while (wordR <= text.length() - 1) {
-					if (String.valueOf(text.charAt(wordR)).matches("\\W")) {
-						if (text.substring(wordL, wordR).matches("(\\W)*(" + Arrays.stream(keywords).collect(Collectors.joining("|")) + ")"))
-							setCharacterAttributes(wordL, wordR - wordL, attributeKeyword, false);
-						else if (text.substring(wordL, wordR).matches("(\\W)*(\\d)"))
-							setCharacterAttributes(wordL, wordR - wordL, attributeNumbers, false);
-						else
-							setCharacterAttributes(wordL, wordR - wordL, attributeNormal, false);
-						wordL = wordR + 1; wordR++;
-					}
-					wordR++;
-				}
-
-				for (int i1 = 0; i1 < getLength(); i1++) {
-					if (Arrays.asList(symbols).contains(Character.toString(text.charAt(i1))))
-						setCharacterAttributes(i1, 1, attributeSpecialSymbols, false);
-				}
-
-				int start2 = -1, end2 = -1, fx = 0;
-				while (true) {
-					start2 = text.indexOf("//", fx);
-					end2 = text.indexOf("\n", start2 + 2);
-					if (start2 == -1) break;
-					if (start2 != -1 && end2 != -1) {
-						setCharacterAttributes(start2, end2 - start2, attributeComments, false);
-						fx = end2 + 1;
-						start2 = -1;
-						end2 = -1;
-					}
-				}
-
-				int start3 = -1, end3 = -1; fx = 0;
-				while (true) {
-					start3 = text.indexOf("/*", fx);
-					end3 = text.indexOf("*/", start3 + 2);
-					if (start3 == -1 || end3 == -1) break;
-					if (start3 != -1 && end3 != -1) {
-						setCharacterAttributes(start3, end3 - start3 + 2, attributeComments, false);
-						fx = end3 + 2;
-						start3 = -1;
-						end3 = -1;
-					}
-				}
-				
-				// String highlighting
-				Scanner sc = new Scanner(text);
-				int totalCount = 0;
-				while (sc.hasNextLine()) {
-					String string = sc.nextLine();
-					boolean inString = false; int backslashCount = 0;
-					for (int i = 0; i < string.length(); i++) {
-						if (string.charAt(i) == '"' && backslashCount % 2 == 0) {
-							inString = !inString; backslashCount = 0;
-							if (!inString)
-								setCharacterAttributes(i + totalCount, 1, attributeStrings, false);
-						} else if (string.charAt(i) == '\\') {
-							backslashCount++;
-						} else {
-							backslashCount = 0;
-						}
-						if (inString) {
-							setCharacterAttributes(i + totalCount, 1, attributeStrings, false);
-						}
-					}
-					totalCount += string.length() + 1;
-				}
-				sc.close();
+				super.insertString(offs, "", attributeNormal);
 			}
 		};
 	}
