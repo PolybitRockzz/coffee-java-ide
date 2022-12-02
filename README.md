@@ -3,12 +3,7 @@
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=java&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 
-This is a Java IDE for developing and debugging java applications.
-
-## Binary Download Links
-
-From Itch (discontinued) https://polybitrockzz.itch.io/coffee-ide-for-java-developers <br>
-From GitHub Releases https://github.com/PolybitRockzz/coffee-java-ide/releases/tag/v0.1.1-alpha
+A Java IDE for running and debugging Java applications and source code. Contains basic features like multi-file editing, syntax highlighting, compilation and running of Java files, etc. This is still in early open alpha phases and will undergo heavy improvements in the near future.
 
 ## Installation Guide
 

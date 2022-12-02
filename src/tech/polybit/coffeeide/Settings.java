@@ -9,11 +9,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
@@ -70,6 +72,20 @@ public class Settings extends JDialog {
 		tabSizeComboBox.setBackground(Info.getThemeColor(0));
 		contentPanel.add(tabSizeComboBox);
 		
+		JLabel autoCompileLabel = new JLabel("Auto Compile on Save");
+		autoCompileLabel.setBounds(20, 110, 150, 25);
+		autoCompileLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		autoCompileLabel.setForeground(Info.getThemeColor(4));
+		contentPanel.add(autoCompileLabel);
+		
+		JCheckBox autoCompileCheckbox = new JCheckBox();
+		autoCompileCheckbox.setSelected(Info.autoCompile);
+		autoCompileCheckbox.setBounds(getWidth() - 150, 110, 100, 25);
+		autoCompileCheckbox.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		autoCompileCheckbox.setForeground(Info.getThemeColor(4));
+		autoCompileCheckbox.setHorizontalAlignment(SwingConstants.CENTER);
+		contentPanel.add(autoCompileCheckbox);
+		
 		JButton saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
 
@@ -78,6 +94,7 @@ public class Settings extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				Info.theme = themes[themeComboBox.getSelectedIndex()];
 				Info.tabSize = tabSizes[tabSizeComboBox.getSelectedIndex()];
+				Info.autoCompile = autoCompileCheckbox.isSelected();
 				
 				File dir = new File(System.getenv("APPDATA") + "\\" + Info.getName());
 				if (!dir.exists()) dir.mkdirs();
@@ -87,6 +104,7 @@ public class Settings extends JDialog {
 				JSONObject settingsObj = new JSONObject();
 				settingsObj.put("theme", Info.theme);
 				settingsObj.put("tab-size", (long) Info.tabSize);
+				settingsObj.put("auto-compile", Info.autoCompile);
 				try (FileWriter file = new FileWriter(settings)) {
 					file.write(settingsObj.toString());
 					file.flush();
