@@ -60,8 +60,6 @@ public class Documents {
 					text.substring(offset + str.length()).indexOf("\n") == -1 ? text.length() : offset + str.length() + text.substring(offset + str.length()).indexOf("\n")
 				);
 				
-				System.out.println(trimmedText);
-				
 				setCharacterAttributes(totalCount, trimmedText.length(), attributeNormal, false);
 
 				int wordL = 0;

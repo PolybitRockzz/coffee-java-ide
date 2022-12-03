@@ -396,7 +396,9 @@ public class ProjectEditor extends JFrame {
 				if (selRow != -1) {
 					if (e.getClickCount() == 2)
 						try {
-							openFile(selPath.getPath());
+							Object[] arr = selPath.getPath();
+							String[] stringArr = Arrays.copyOf(arr, arr.length, String[].class);
+							openFile(stringArr);
 						} catch (Exception e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), "Couldn't Open File!", JOptionPane.ERROR_MESSAGE);
 							e1.printStackTrace();
@@ -446,6 +448,11 @@ public class ProjectEditor extends JFrame {
 		}
 
 		setupFileTree();
+		try {
+			openFile(new String[] {filepath[filepath.length - 1], "src", className + ".java"});
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Couldn't auto-open Class file!", JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	// Save a File
@@ -522,10 +529,10 @@ public class ProjectEditor extends JFrame {
 	}
 
 	// Checks if the file is available
-	private void openFile(Object[] fileArr) throws Exception {
-		String[] strFile = new String[fileArr.length - 1];
-		for (int i = 0; i < strFile.length; i++) strFile[i] = fileArr[i + 1].toString();
-		String filedir = Arrays.stream(strFile).collect(Collectors.joining("\\"));
+	private void openFile(String[] fileArr) throws Exception {
+		String[] strArr = new String[fileArr.length - 1];
+		for (int i = 0; i < strArr.length; i++) strArr[i] = fileArr[i + 1].toString();
+		String filedir = Arrays.stream(strArr).collect(Collectors.joining("\\"));
 		File file = new File(filepathStr + "\\" + filedir);
 		if (!file.isDirectory()) {
 			createNewTab(file, filedir);
@@ -676,10 +683,14 @@ public class ProjectEditor extends JFrame {
 		tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
 
 		scrollPane.setViewportView(editorPane);
+		
 		if (file.getName().endsWith(".java"))
 			tabs.add(new TabComponent(file, tabLabel, editorPane, filedir.substring(4, filedir.length() - file.getName().length())));
 		else
 			tabs.add(new TabComponent(file, tabLabel, editorPane, null));
+		
+		
+		
 		checkIfNoOpenTabs();
 	}
 
