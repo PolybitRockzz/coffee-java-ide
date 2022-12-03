@@ -1,4 +1,4 @@
-package tech.polybit.coffeeide;
+package tech.polybit.coffeeide.components;
 
 import java.awt.Robot;
 import java.awt.event.KeyEvent;

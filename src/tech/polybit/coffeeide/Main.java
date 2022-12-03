@@ -12,6 +12,9 @@ import javax.swing.JOptionPane;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import tech.polybit.coffeeide.components.Info;
+import tech.polybit.coffeeide.menu.ProjectSelection;
+
 public class Main {
 
 	@SuppressWarnings("unchecked")

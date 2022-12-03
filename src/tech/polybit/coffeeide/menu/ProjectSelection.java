@@ -1,4 +1,4 @@
-package tech.polybit.coffeeide;
+package tech.polybit.coffeeide.menu;
 
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -15,6 +15,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.formdev.flatlaf.FlatClientProperties;
+
+import tech.polybit.coffeeide.components.Info;
+import tech.polybit.coffeeide.dialogs.Settings;
+import tech.polybit.coffeeide.editor.ProjectEditor;
 
 import java.awt.Font;
 import java.util.ArrayList;
@@ -382,7 +386,7 @@ public class ProjectSelection extends JFrame {
 		repaint();
 	}
 
-	void check() {
+	public void check() {
 		return;
 	}
 }

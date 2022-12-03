@@ -6,6 +6,8 @@ import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.SwingConstants;
 
+import tech.polybit.coffeeide.components.Info;
+
 public class SplashScreen {
 	
 	static void display() {

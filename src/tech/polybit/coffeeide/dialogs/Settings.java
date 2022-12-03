@@ -1,4 +1,4 @@
-package tech.polybit.coffeeide;
+package tech.polybit.coffeeide.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -20,6 +20,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import org.json.simple.JSONObject;
+
+import tech.polybit.coffeeide.components.Info;
+import tech.polybit.coffeeide.menu.ProjectSelection;
 
 public class Settings extends JDialog {
 

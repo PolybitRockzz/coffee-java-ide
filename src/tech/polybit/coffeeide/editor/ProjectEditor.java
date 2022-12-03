@@ -1,4 +1,4 @@
-package tech.polybit.coffeeide;
+package tech.polybit.coffeeide.editor;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,7 +40,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import tech.polybit.coffeeide.components.Contact;
+import tech.polybit.coffeeide.components.Documents;
+import tech.polybit.coffeeide.components.Info;
 import tech.polybit.coffeeide.components.MyTreeCellRenderer;
+import tech.polybit.coffeeide.components.TabComponent;
+import tech.polybit.coffeeide.components.TextLineNumber;
 
 import javax.swing.JOptionPane;
 import javax.swing.ScrollPaneConstants;
@@ -397,7 +401,7 @@ public class ProjectEditor extends JFrame {
 					if (e.getClickCount() == 2)
 						try {
 							Object[] arr = selPath.getPath();
-							String[] stringArr = Arrays.copyOf(arr, arr.length, String[].class);
+							String[] stringArr = Arrays.stream(arr).map(Object::toString).toArray(String[]::new);
 							openFile(stringArr);
 						} catch (Exception e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), "Couldn't Open File!", JOptionPane.ERROR_MESSAGE);
@@ -732,7 +736,7 @@ public class ProjectEditor extends JFrame {
 		repaint();
 	}
 
-	void check() {
+	public void check() {
 		return;
 	}
 
