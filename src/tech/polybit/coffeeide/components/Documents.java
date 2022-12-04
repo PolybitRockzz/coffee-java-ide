@@ -80,10 +80,10 @@ public class Documents {
 				
 				// String highlighting
 				String string = "";
-				Scanner sc = new Scanner(trimmedText);
+				Scanner sc1 = new Scanner(trimmedText);
 				int stringCount = 0;
-				while (sc.hasNextLine()) {
-					string = sc.nextLine();
+				while (sc1.hasNextLine()) {
+					string = sc1.nextLine();
 					boolean inString = false, inChar = false; int backslashCount = 0;
 					for (int i = 0; i < string.length(); i++) {
 						if (string.charAt(i) == '"' && backslashCount % 2 == 0 && !inChar) {
@@ -107,13 +107,21 @@ public class Documents {
 					}
 					stringCount += string.length() + 1;
 				}
-				sc.close();
+				sc1.close();
 
 				// Auto comment highlighting
-				int start2 = trimmedText.indexOf("//", totalCount);
-				if (start2 != -1) {
-					setCharacterAttributes(totalCount + start2, trimmedText.length(), attributeComments, false);
+				string = "";
+				Scanner sc2 = new Scanner(text);
+				int stringCount2 = 0;
+				while (sc2.hasNextLine()) {
+					string = sc2.nextLine();
+					int start2 = text.indexOf("//", stringCount2);
+					if (start2 != -1) {
+						setCharacterAttributes(stringCount2 + start2, string.length(), attributeComments, false);
+					}
+					stringCount += string.length() + 1;
 				}
+				sc2.close();
 
 				// Auto comment highlighting
 				int start3 = -1, end3 = -1; int fx = totalCount;
