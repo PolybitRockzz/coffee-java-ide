@@ -17,9 +17,10 @@ import com.formdev.flatlaf.FlatLightLaf;
 
 public class Info {
 
-	public static String theme = "dark";
+	public static String theme = "Dark";
 	public static int tabSize = 4;
 	public static boolean autoCompile = false;
+	public static String javaTemplate = "Hello World";
 
 	public static String getName() {
 		return "Coffee IDE";
@@ -62,11 +63,9 @@ public class Info {
 				"Default packages are discouraged",
 				"Take a break, you don't deserve it, but still...",
 				"sus",
-				"light mode users are photolytic parasites",
-				"Debug Tools? Nah I use print statements everywhere bruv",
-				"cunt",
+				"light mode users are photophillic parasites",
+				"Why use debug tools when I can System.out.println() everywhere?",
 				"Practiced Compassion",
-				"Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S, Ctrl + S",
 		};
 		return messages[(int) (Math.random() * messages.length)];
 	}
@@ -82,9 +81,9 @@ public class Info {
 	public static void setUILookAndFeel() {
 		// Set UI Look and Feel
 		try {
-			if (Info.theme.equals("dark"))
+			if (Info.theme.equals("Dark"))
 				UIManager.setLookAndFeel(new FlatDarkLaf());
-			else if (Info.theme.equals("light"))
+			else if (Info.theme.equals("Light"))
 				UIManager.setLookAndFeel(new FlatLightLaf());
 
 			//Frame
@@ -138,11 +137,20 @@ public class Info {
 				new Color(153, 92, 2), // Font Special Symbols
 				new Color(19, 156, 100), // Font Strings
 		};
-		if (theme.equals("dark"))
+		if (theme.equals("Dark"))
 			return darkTheme[shade];
-		else if (theme.equals("light"))
+		else if (theme.equals("Light"))
 			return lightTheme[shade];
 		return null;
+	}
+	
+	public static String getJavaTemplate(String className, String packageName) {
+		if (javaTemplate.equals("Hello World")) {
+			return (packageName == "" ? "" : ("package " + packageName + ";\n\n")) + "class " + className + " {\n\t\n\tpublic static void main (String[] args) {\n\t\t//Auto generated main method, printing Hello World.\n\t\tSystem.out.println(\"Hello, World!\");\n\t}\n\t\n}";
+		} else if (javaTemplate.equals("Empty Main")) {
+			return (packageName == "" ? "" : ("package " + packageName + ";\n\n")) + "class " + className + " {\n\t\n\tpublic static void main (String[] args) {\n\t\t//Auto generated empty main method\n\t}\n\t\n}";
+		}
+		return "";
 	}
 
 }

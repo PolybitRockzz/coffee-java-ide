@@ -72,6 +72,7 @@ public class ProjectSelection extends JFrame {
 				settingsObj.put("theme", Info.theme);
 				settingsObj.put("tab-size", (long) Info.tabSize);
 				settingsObj.put("auto-compile", Info.autoCompile);
+				settingsObj.put("java-template", Info.javaTemplate);
 				try (FileWriter file = new FileWriter(settings)) {
 					file.write(settingsObj.toString());
 					file.flush();

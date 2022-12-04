@@ -36,6 +36,7 @@ public class Main {
 				settingsObj.put("theme", Info.theme);
 				settingsObj.put("tab-size", (long) Info.tabSize);
 				settingsObj.put("auto-compile", Info.autoCompile);
+				settingsObj.put("java-template", Info.javaTemplate);
 				try (FileWriter file = new FileWriter(settings)) {
 					file.write(settingsObj.toString());
 					file.flush();
@@ -49,11 +50,13 @@ public class Main {
 					Info.theme = (String) settingsList.get("theme");
 					Info.tabSize = (int) ((long) settingsList.get("tab-size"));
 					Info.autoCompile = (boolean) settingsList.get("auto-compile");
+					Info.javaTemplate = (String) settingsList.get("java-template");
 				} catch (Exception e) {
 					JSONObject settingsObj = new JSONObject();
 					settingsObj.put("theme", Info.theme);
 					settingsObj.put("tab-size", (long) Info.tabSize);
 					settingsObj.put("auto-compile", Info.autoCompile);
+					settingsObj.put("java-template", Info.javaTemplate);
 					try (FileWriter file = new FileWriter(settings)) {
 						file.write(settingsObj.toString());
 						file.flush();

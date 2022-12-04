@@ -47,7 +47,7 @@ public class Settings extends JDialog {
 		themeLabel.setForeground(Info.getThemeColor(4));
 		contentPanel.add(themeLabel);
 		
-		String[] themes = {Info.theme.equals("dark") ? "dark" : "light", Info.theme.equals("dark") ? "light" : "dark"};
+		String[] themes = {Info.theme.equals("Dark") ? "Dark" : "Light", Info.theme.equals("Dark") ? "Light" : "Dark"};
 		
 		JComboBox<String> themeComboBox = new JComboBox<String>(themes);
 		themeComboBox.setBounds(getWidth() - 150, 30, 100, 25);
@@ -81,13 +81,30 @@ public class Settings extends JDialog {
 		autoCompileLabel.setForeground(Info.getThemeColor(4));
 		contentPanel.add(autoCompileLabel);
 		
-		JCheckBox autoCompileCheckbox = new JCheckBox();
-		autoCompileCheckbox.setSelected(Info.autoCompile);
-		autoCompileCheckbox.setBounds(getWidth() - 150, 110, 100, 25);
-		autoCompileCheckbox.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-		autoCompileCheckbox.setForeground(Info.getThemeColor(4));
-		autoCompileCheckbox.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPanel.add(autoCompileCheckbox);
+		JCheckBox autoCompileCheckBox = new JCheckBox();
+		autoCompileCheckBox.setSelected(Info.autoCompile);
+		autoCompileCheckBox.setBounds(getWidth() - 150, 110, 100, 25);
+		autoCompileCheckBox.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		autoCompileCheckBox.setForeground(Info.getThemeColor(4));
+		autoCompileCheckBox.setHorizontalAlignment(SwingConstants.CENTER);
+		contentPanel.add(autoCompileCheckBox);
+		
+		JLabel javaTemplateLabel = new JLabel("Template");
+		javaTemplateLabel.setBounds(20, 150, 100, 25);
+		javaTemplateLabel.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		javaTemplateLabel.setForeground(Info.getThemeColor(4));
+		contentPanel.add(javaTemplateLabel);
+		
+		String[] templates = {Info.javaTemplate.equals("Hello World") ? "Hello World" : "Empty Main", Info.javaTemplate.equals("Hello World") ? "Empty Main" : "Hello World"};
+		
+		JComboBox<String> javaTemplateComboBox = new JComboBox<String>(templates);
+		javaTemplateComboBox.setBounds(getWidth() - 150, 150, 100, 25);
+		javaTemplateComboBox.setSelectedIndex(0);
+		javaTemplateComboBox.setMaximumSize(themeComboBox.getPreferredSize());
+		javaTemplateComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+		javaTemplateComboBox.setForeground(Info.getThemeColor(4));
+		javaTemplateComboBox.setBackground(Info.getThemeColor(0));
+		contentPanel.add(javaTemplateComboBox);
 		
 		JButton saveButton = new JButton("Save");
 		saveButton.addActionListener(new ActionListener() {
@@ -97,7 +114,8 @@ public class Settings extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				Info.theme = themes[themeComboBox.getSelectedIndex()];
 				Info.tabSize = tabSizes[tabSizeComboBox.getSelectedIndex()];
-				Info.autoCompile = autoCompileCheckbox.isSelected();
+				Info.autoCompile = autoCompileCheckBox.isSelected();
+				Info.javaTemplate = templates[javaTemplateComboBox.getSelectedIndex()];
 				
 				File dir = new File(System.getenv("APPDATA") + "\\" + Info.getName());
 				if (!dir.exists()) dir.mkdirs();
@@ -108,6 +126,7 @@ public class Settings extends JDialog {
 				settingsObj.put("theme", Info.theme);
 				settingsObj.put("tab-size", (long) Info.tabSize);
 				settingsObj.put("auto-compile", Info.autoCompile);
+				settingsObj.put("java-template", Info.javaTemplate);
 				try (FileWriter file = new FileWriter(settings)) {
 					file.write(settingsObj.toString());
 					file.flush();

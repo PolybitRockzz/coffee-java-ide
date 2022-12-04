@@ -445,7 +445,7 @@ public class ProjectEditor extends JFrame {
 			}
 		try {
 			FileWriter fw = new FileWriter(file);
-			fw.write("class " + className + " {\n\t\n\tpublic static void main (String[] args) {\n\t\tSystem.out.println(\"Hello, world!\");\n\t}\n\t\n}");
+			fw.write(Info.getJavaTemplate(className, ""));
 			fw.close();
 		} catch (IOException e1) {
 			JOptionPane.showMessageDialog(null, e1.getMessage(), "Couldn't create Class!", JOptionPane.ERROR_MESSAGE);
