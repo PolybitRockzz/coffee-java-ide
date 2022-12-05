@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -30,6 +31,8 @@ public class Settings extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 
 	public Settings(ProjectSelection frame) {
+		int index;
+		
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
 		setResizable(false);
@@ -47,11 +50,11 @@ public class Settings extends JDialog {
 		themeLabel.setForeground(Info.getThemeColor(4));
 		contentPanel.add(themeLabel);
 		
-		String[] themes = {Info.theme.equals("Dark") ? "Dark" : "Light", Info.theme.equals("Dark") ? "Light" : "Dark"};
+		String[] themes = {"Dark", "Light"};
 		
 		JComboBox<String> themeComboBox = new JComboBox<String>(themes);
 		themeComboBox.setBounds(getWidth() - 150, 30, 100, 25);
-		themeComboBox.setSelectedIndex(0);
+		themeComboBox.setSelectedIndex((index = Arrays.binarySearch(themes, Info.theme)) < 0 ? 0 : index);
 		themeComboBox.setMaximumSize(themeComboBox.getPreferredSize());
 		themeComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		themeComboBox.setForeground(Info.getThemeColor(4));
@@ -68,7 +71,7 @@ public class Settings extends JDialog {
 		
 		JComboBox<Integer> tabSizeComboBox = new JComboBox<Integer>(tabSizes);
 		tabSizeComboBox.setBounds(getWidth() - 150, 70, 100, 25);
-		tabSizeComboBox.setSelectedIndex((Info.tabSize/2) - 1);
+		tabSizeComboBox.setSelectedIndex((index = Arrays.binarySearch(tabSizes, Info.tabSize)) < 0 ? 1 : index);
 		tabSizeComboBox.setMaximumSize(tabSizeComboBox.getPreferredSize());
 		tabSizeComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		tabSizeComboBox.setForeground(Info.getThemeColor(4));
@@ -95,11 +98,11 @@ public class Settings extends JDialog {
 		javaTemplateLabel.setForeground(Info.getThemeColor(4));
 		contentPanel.add(javaTemplateLabel);
 		
-		String[] templates = {Info.javaTemplate.equals("Hello World") ? "Hello World" : "Empty Main", Info.javaTemplate.equals("Hello World") ? "Empty Main" : "Hello World"};
+		String[] templates = {"Empty Main", "Hello World"};
 		
 		JComboBox<String> javaTemplateComboBox = new JComboBox<String>(templates);
 		javaTemplateComboBox.setBounds(getWidth() - 150, 150, 100, 25);
-		javaTemplateComboBox.setSelectedIndex(0);
+		javaTemplateComboBox.setSelectedIndex((index = Arrays.binarySearch(templates, Info.javaTemplate)) < 0 ? 1 : index);
 		javaTemplateComboBox.setMaximumSize(themeComboBox.getPreferredSize());
 		javaTemplateComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 11));
 		javaTemplateComboBox.setForeground(Info.getThemeColor(4));
