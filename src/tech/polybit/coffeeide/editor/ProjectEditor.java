@@ -4,10 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.MatteBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.TabSet;
@@ -35,19 +33,21 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
+import org.fife.ui.rsyntaxtextarea.Theme;
+import org.fife.ui.rsyntaxtextarea.Token;
+import org.fife.ui.rtextarea.RTextScrollPane;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import tech.polybit.coffeeide.components.Contact;
-import tech.polybit.coffeeide.components.Documents;
 import tech.polybit.coffeeide.components.Info;
 import tech.polybit.coffeeide.components.MyTreeCellRenderer;
 import tech.polybit.coffeeide.components.TabComponent;
-import tech.polybit.coffeeide.components.TextLineNumber;
-
 import javax.swing.JOptionPane;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,6 +72,7 @@ public class ProjectEditor extends JFrame {
 	private JTree fileTree;
 
 	private JButton saveButton;
+	private JButton runButton;
 	private JButton compileButton;
 
 	private String[] filepath;
@@ -317,7 +318,7 @@ public class ProjectEditor extends JFrame {
 		}
 		rightPanel.add(compileButton);
 
-		JButton runButton = new JButton("Run");
+		runButton = new JButton("Run");
 		runButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -556,12 +557,76 @@ public class ProjectEditor extends JFrame {
 		while ((i = reader.read()) != -1)
 			text += (char) i;
 		reader.close();
+		
+		RSyntaxTextArea editorPane = new RSyntaxTextArea();
+		if (file.getName().endsWith(".java"))
+			editorPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+		else if (file.getName().endsWith(".json"))
+			editorPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON);
+		else
+			editorPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
+		editorPane.setText(text);
+		editorPane.setCodeFoldingEnabled(true);
+		editorPane.setAntiAliasingEnabled(true);
+		
+		Theme theme = Theme.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
+		theme.apply(editorPane);
+		
+		editorPane.setFont(new Font("Consolas", Font.PLAIN, 14));
+		editorPane.setBackground(Info.getThemeColor(0));
+		editorPane.setForeground(Info.getThemeColor(4));
+		editorPane.getDocument().addDocumentListener(getDocumentListener());
+		editorPane.setTabSize(Info.tabSize);
+		editorPane.addKeyListener(new KeyListener() {
 
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		tabbedPane.addTab(file.getName(), null, scrollPane, file.getAbsolutePath());
-		scrollPane.setBorder(null);
-		tabbedPane.setSelectedComponent(scrollPane);
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_S && e.isControlDown()) {
+					saveButton.doClick();
+				}
+				if (e.getKeyCode() == KeyEvent.VK_F5) {
+					runButton.doClick();
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
+		SyntaxScheme scheme = editorPane.getSyntaxScheme();
+		scheme.getStyle(Token.RESERVED_WORD).foreground = Info.getThemeColor(6);
+		scheme.getStyle(Token.RESERVED_WORD).font = new Font("Consolas", Font.BOLD, 14);
+		scheme.getStyle(Token.RESERVED_WORD_2).foreground = Info.getThemeColor(6);
+		scheme.getStyle(Token.RESERVED_WORD_2).font = new Font("Consolas", Font.BOLD, 14);
+		scheme.getStyle(Token.DATA_TYPE).foreground = Info.getThemeColor(6);
+		scheme.getStyle(Token.DATA_TYPE).font = new Font("Consolas", Font.BOLD, 14);
+		scheme.getStyle(Token.NULL).foreground = Info.getThemeColor(6);
+		scheme.getStyle(Token.NULL).font = new Font("Consolas", Font.BOLD, 14);
+		scheme.getStyle(Token.LITERAL_STRING_DOUBLE_QUOTE).foreground = Info.getThemeColor(9);
+		scheme.getStyle(Token.LITERAL_CHAR).foreground = Info.getThemeColor(9);
+		scheme.getStyle(Token.ANNOTATION).foreground = Info.getThemeColor(8);
+		scheme.getStyle(Token.COMMENT_DOCUMENTATION).foreground = Info.getThemeColor(5);
+		scheme.getStyle(Token.COMMENT_EOL).foreground = Info.getThemeColor(5);
+		scheme.getStyle(Token.COMMENT_MULTILINE).foreground = Info.getThemeColor(5);
+		scheme.getStyle(Token.LITERAL_NUMBER_DECIMAL_INT).foreground = Info.getThemeColor(7);
+		scheme.getStyle(Token.LITERAL_NUMBER_FLOAT).foreground = Info.getThemeColor(7);
+		scheme.getStyle(Token.LITERAL_NUMBER_HEXADECIMAL).foreground = Info.getThemeColor(7);
+		
+		RTextScrollPane editorScrollPane = new RTextScrollPane(editorPane);
+		editorScrollPane.setBorder(null);
+		
+		tabbedPane.addTab(file.getName(), null, editorScrollPane, file.getAbsolutePath());
+		tabbedPane.setSelectedComponent(editorScrollPane);
 
 		JLabel tabLabel = new JLabel(file.getName());
 		tabLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -573,53 +638,6 @@ public class ProjectEditor extends JFrame {
 		tabComponent.setBackground(new Color(0,0,0,0));
 
 		tabComponent.add(tabLabel, BorderLayout.WEST);
-
-		JTextPane editorPane;
-		if (file.getName().endsWith(".java")) {
-			DefaultStyledDocument javadoc = Documents.getJavaStyledDoc(tabs, tabbedPane);
-			javadoc.addDocumentListener(getDocumentListener());
-			editorPane = new JTextPane(javadoc);
-		} else {
-			DefaultStyledDocument doc = Documents.getDefaultStyledDoc(tabs, tabbedPane);
-			doc.addDocumentListener(getDocumentListener());
-			editorPane = new JTextPane(doc);
-		}
-		editorPane.setText(text);
-		editorPane.setBackground(Info.getThemeColor(1));
-		editorPane.setForeground(Info.getThemeColor(4));
-		editorPane.setBorder(null);
-		editorPane.setFont(new Font("Consolas", Font.PLAIN, 14));
-		editorPane.addKeyListener(new KeyListener() {
-
-			@Override
-			public void keyTyped(KeyEvent e) {
-
-			}
-
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.isControlDown()) {
-					if (e.getKeyCode() == KeyEvent.VK_S)
-						saveButton.doClick();
-				}
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e) {
-
-			}
-
-		});
-
-		TextLineNumber tln = new TextLineNumber(editorPane);
-		tln.setBackground(Info.getThemeColor(1));
-		tln.setUpdateFont(true);
-		tln.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		tln.setCurrentLineForeground(Info.getThemeColor(7));
-		tln.setBorder(new MatteBorder(0, 0, 0, 1, Info.getThemeColor(5)));
-		scrollPane.setRowHeaderView(tln);
-
-		setTabs(editorPane, Info.tabSize);
 
 		JButton closeButton = new JButton();
 		closeButton.addActionListener(new ActionListener() {
@@ -682,11 +700,11 @@ public class ProjectEditor extends JFrame {
 		closeButton.setBorderPainted(false);
 		tabComponent.add(closeButton, BorderLayout.CENTER);
 		
-		tabbedPane.add(scrollPane);
+		tabbedPane.add(editorScrollPane);
 		tabbedPane.setTabComponentAt(tabs.size(), tabComponent);
 		tabbedPane.setSelectedIndex(tabbedPane.getTabCount() - 1);
 
-		scrollPane.setViewportView(editorPane);
+		editorScrollPane.setViewportView(editorPane);
 		
 		if (file.getName().endsWith(".java"))
 			tabs.add(new TabComponent(file, tabLabel, editorPane, filedir.substring(4, filedir.length() - file.getName().length())));
@@ -708,27 +726,6 @@ public class ProjectEditor extends JFrame {
 			editorPanel.add(tabbedPane, BorderLayout.CENTER);
 		}
 		refresh();
-	}
-
-	// Sets the indentation count in the text editor
-	private static void setTabs(final JTextPane textPane, int charactersPerTab) {
-		FontMetrics fm = textPane.getFontMetrics( textPane.getFont() );
-		int charWidth = fm.charWidth( ' ' );
-		int tabWidth = charWidth * charactersPerTab;
-
-		TabStop[] tabs = new TabStop[9];
-
-		for (int j = 0; j < tabs.length; j++)
-		{
-			int tab = j + 1;
-			tabs[j] = new TabStop( tab * tabWidth );
-		}
-
-		TabSet tabSet = new TabSet(tabs);
-		SimpleAttributeSet attributes = new SimpleAttributeSet();
-		StyleConstants.setTabSet(attributes, tabSet);
-		int length = textPane.getDocument().getLength();
-		textPane.getStyledDocument().setParagraphAttributes(0, length, attributes, false);
 	}
 
 	private void refresh() {

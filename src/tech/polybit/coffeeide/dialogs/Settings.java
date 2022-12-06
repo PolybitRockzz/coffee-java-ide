@@ -50,7 +50,7 @@ public class Settings extends JDialog {
 		themeLabel.setForeground(Info.getThemeColor(4));
 		contentPanel.add(themeLabel);
 		
-		String[] themes = {"Dark", "Light"};
+		String[] themes = {"Dark", "Dark++", "Light"};
 		
 		JComboBox<String> themeComboBox = new JComboBox<String>(themes);
 		themeComboBox.setBounds(getWidth() - 150, 30, 100, 25);

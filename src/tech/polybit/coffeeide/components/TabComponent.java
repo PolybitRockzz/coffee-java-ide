@@ -5,14 +5,16 @@ import java.io.File;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+
 public class TabComponent {
 	
 	private File file;
 	private JLabel label;
-	private JTextPane textPane;
+	private RSyntaxTextArea textPane;
 	private String packages;
 	
-	public TabComponent(File file, JLabel label, JTextPane textPane, String packages) {
+	public TabComponent(File file, JLabel label, RSyntaxTextArea textPane, String packages) {
 		this.file = file;
 		this.label = label;
 		this.textPane = textPane;
@@ -39,7 +41,7 @@ public class TabComponent {
 		return label;
 	}
 	
-	public JTextPane getTextPane() {
+	public RSyntaxTextArea getTextPane() {
 		return textPane;
 	}
 

@@ -81,9 +81,9 @@ public class Info {
 	public static void setUILookAndFeel() {
 		// Set UI Look and Feel
 		try {
-			if (Info.theme.equals("Dark"))
+			if (Info.theme.contains("Dark"))
 				UIManager.setLookAndFeel(new FlatDarkLaf());
-			else if (Info.theme.equals("Light"))
+			else if (Info.theme.contains("Light"))
 				UIManager.setLookAndFeel(new FlatLightLaf());
 
 			//Frame
@@ -134,13 +134,27 @@ public class Info {
 				new Color(195, 195, 195), // Font Minor
 				new Color(232, 86, 86), // Font Keyword
 				new Color(5, 117, 173), // Font Number
-				new Color(153, 92, 2), // Font Special Symbols
+				new Color(153, 92, 2), // Font Annotation
 				new Color(19, 156, 100), // Font Strings
+		};
+		Color[] darkPlusPlusTheme = {
+				new Color(0, 0, 0), // Dark++ +
+				new Color(10, 10, 10), // Dark++
+				new Color(20, 20, 20), // Dark++ :: Hover
+				new Color(235, 235, 235), // Font Priority
+				new Color(215, 215, 215), // Font
+				new Color(115, 115, 115), // Font Minor
+				new Color(232, 86, 86), // Font Keyword
+				new Color(5, 117, 173), // Font Number
+				new Color(207, 127, 8), // Font Special Symbols
+				new Color(27, 198, 128), // Font Strings
 		};
 		if (theme.equals("Dark"))
 			return darkTheme[shade];
 		else if (theme.equals("Light"))
 			return lightTheme[shade];
+		else if (theme.equals("Dark++"))
+			return darkPlusPlusTheme[shade];
 		return null;
 	}
 	
